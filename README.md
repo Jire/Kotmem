@@ -2,7 +2,11 @@
 _Easy process, module and memory interfacing through Kotlin_
 
 This library is licensed under LGPL 3.0 and was created for use by myself for creating game cheats. It is in use at 
-[https://abendigo.org](https://abendigo.org)
+[https://abendigo.org](https://abendigo.org)  
+
+---
+
+###One Minute Intro
 
 Let's open a process!
 

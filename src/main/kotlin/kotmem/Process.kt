@@ -23,15 +23,15 @@ class Process(val unsafe: UnsafeProcess) {
 		return module
 	}
 
-	val readMemory = HashMap<KClass<*>, Memory>()
+	val memoryCache = HashMap<KClass<*>, Memory>()
 
 	inline fun <reified T> read(address: Long): T {
 		val type = T::class
 		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName) ?: throw IllegalArgumentException("Unsupported type")
-		var memory = readMemory[type]
+		var memory = memoryCache[type]
 		if (memory == null) {
 			memory = Memory(bytes.toLong())
-			readMemory.put(type, memory)
+			memoryCache.put(type, memory)
 		}
 		if (!readProcessMemory(unsafe, address, memory, bytes)) throw Win32Exception(Native.getLastError())
 		return when (type.qualifiedName) {
@@ -51,10 +51,10 @@ class Process(val unsafe: UnsafeProcess) {
 	inline fun <reified T> write(address: Long, data: T) {
 		val type = T::class
 		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName) ?: throw IllegalArgumentException("Unsupported type")
-		var memory = readMemory[type]
+		var memory = memoryCache[type]
 		if (memory == null) {
 			memory = Memory(bytes.toLong())
-			readMemory.put(type, memory)
+			memoryCache.put(type, memory)
 		}
 		memory.clear()
 		when (type.qualifiedName) {

@@ -1,0 +1,8 @@
+.gitignore
+kotmem.iml
+gradlew
+gradlew.bat
+gradle
+build
+.idea
+.gradle

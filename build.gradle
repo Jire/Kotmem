@@ -1,0 +1,29 @@
+group 'kotmem'
+version '0.1'
+
+apply plugin: 'kotlin'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile group: 'junit', name: 'junit', version: '4.11'
+	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+	compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+	compile 'net.java.dev.jna:jna:4.2.1'
+	compile 'net.java.dev.jna:platform:3.5.2'
+}
+buildscript {
+	ext.kotlin_version = '1.0.0-beta-2423'
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	}
+}
+sourceSets {
+	main.java.srcDirs += 'src/main/kotlin'
+}

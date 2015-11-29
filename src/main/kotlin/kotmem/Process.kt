@@ -6,8 +6,9 @@ import kotmem.unsafe.*
 import java.util.*
 import kotlin.reflect.*
 
-val TYPE_TO_BYTES = mapOf(Boolean::class.qualifiedName to 1, Byte::class.qualifiedName to 1, Short::class.qualifiedName to 2,
-		Int::class.qualifiedName to 4, Long::class.qualifiedName to 8, Float::class.qualifiedName to 4, Double::class.qualifiedName to 8)
+val TYPE_TO_BYTES = mapOf(Boolean::class.qualifiedName to 1, Byte::class.qualifiedName to 1,
+		Short::class.qualifiedName to 2, Int::class.qualifiedName to 4, Long::class.qualifiedName to 8,
+		Float::class.qualifiedName to 4, Double::class.qualifiedName to 8)
 
 class Process(val unsafe: UnsafeProcess) {
 

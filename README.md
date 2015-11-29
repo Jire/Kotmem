@@ -11,24 +11,24 @@ Let's open a process!
 Now let's use the process to read at some address. Note that the type can't be inferred by the compiler here, it must
  be explicit in the value declaration.
 
-    val cafeBabe: Int = pc.read(0xCAFEBABE)
+    val cafeBabe: Int = process.read(0xCAFEBABE)
 
 We can also explicitly specify the type in the method call.
 
-    val deadBabe = pc.read<Int>(0xDEADBABE)
+    val deadBabe = process.read<Int>(0xDEADBABE)
     
 Here the compiler can infer that the type is `boolean`, thus we can omit.
 
-    if (pc.read(0xBADCAFE)) println("We're in a bad cafe!")
+    if (process.read(0xBADCAFE)) println("We're in a bad cafe!")
 
 We're also able to write at some address. The data argument provides the type thus the type can always be inferred by
  the compiler.
 
-    pc.write(0xBADCAFE, false)
+    process.write(0xBADCAFE, false)
 
 We can resolve a process' module as well. These are cached by name on first call.
 
-    val awesomeDLL = pc.resolveModule("awesome.dll")
+    val awesomeDLL = process.resolveModule("awesome.dll")
     
 With the module we are able to query its address `awesomeDLL.address` and name `awesomeDLL.name`. These are lazily 
 initiated and are cached once accessed.

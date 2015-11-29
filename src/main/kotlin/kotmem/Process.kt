@@ -23,17 +23,23 @@ class Process(val unsafe: UnsafeProcess) {
 		return module
 	}
 
-	val memoryCache = HashMap<KClass<*>, Memory>()
+	private val memoryCache = HashMap<KClass<*>, Memory>()
 
-	inline fun <reified T> read(address: Long): T {
-		val type = T::class
-		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName) ?: throw IllegalArgumentException("Unsupported type")
+	fun memoryOf(type: KClass<*>, bytes: Int): Memory {
 		var memory = memoryCache[type]
 		if (memory == null) {
 			memory = Memory(bytes.toLong())
 			memoryCache.put(type, memory)
 		}
-		if (!readProcessMemory(unsafe, address, memory, bytes)) throw Win32Exception(Native.getLastError())
+		return memory
+	}
+
+	inline fun <reified T> read(address: Long): T {
+		val type = T::class
+		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
+		val memory = memoryOf(type, bytes)
+		if (!readProcessMemory(unsafe, address, memory, bytes))
+			throw Win32Exception(Native.getLastError())
 		return when (type.qualifiedName) {
 			Boolean::class.qualifiedName -> memory.getByte(0) > 0
 			Byte::class.qualifiedName -> memory.getByte(0)
@@ -50,13 +56,8 @@ class Process(val unsafe: UnsafeProcess) {
 
 	inline fun <reified T> write(address: Long, data: T) {
 		val type = T::class
-		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName) ?: throw IllegalArgumentException("Unsupported type")
-		var memory = memoryCache[type]
-		if (memory == null) {
-			memory = Memory(bytes.toLong())
-			memoryCache.put(type, memory)
-		}
-		memory.clear()
+		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
+		val memory = memoryOf(type, bytes)
 		when (type.qualifiedName) {
 			Boolean::class.qualifiedName -> memory.setByte(0, if (data as Boolean) 1 else 0)
 			Byte::class.qualifiedName -> memory.setByte(0, data as Byte)
@@ -67,7 +68,8 @@ class Process(val unsafe: UnsafeProcess) {
 			Double::class.qualifiedName -> memory.setDouble(0, data as Double)
 			else -> throw AssertionError("Impossible case of invalid type \"${type.qualifiedName}\"")
 		}
-		if (!writeProcessMemory(unsafe, address, memory, bytes)) throw Win32Exception(Native.getLastError())
+		if (!writeProcessMemory(unsafe, address, memory, TYPE_TO_BYTES.getRaw(type.qualifiedName)!!))
+			throw Win32Exception(Native.getLastError())
 	}
 
 	inline fun <reified T> write(address: Int, data: T): Unit = write(address.toLong(), data)

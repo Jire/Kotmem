@@ -5,6 +5,7 @@ import com.sun.jna.platform.win32.*
 import com.sun.jna.platform.win32.WinDef.*
 import com.sun.jna.ptr.*
 import java.util.*
+import java.util.concurrent.locks.*
 
 const val PROCESS_QUERY_INFORMATION = 0x400
 const val PROCESS_VM_READ = 0x10
@@ -69,11 +70,26 @@ fun resolveModule(process: UnsafeProcess, moduleName: String) =
 
 fun resolveModuleAddress(module: UnsafeModule) = Pointer.nativeValue(module.info.lpBaseOfDll?.pointer)
 
-fun readProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, bytes: Int) =
-		Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) == 1
+fun readProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, bytes: Int) = lock {
+	Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) == 1
+}
 
-fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, bytes: Int) =
-		Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) == 1
+fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, bytes: Int) = lock {
+	Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) == 1
+}
 
 class UnsafeProcess(val id: Int, val handle: WinNT.HANDLE)
 class UnsafeModule(val process: UnsafeProcess, val module: HMODULE, val info: LPMODULEINFO)
+
+public val lock = ReentrantReadWriteLock(true)
+
+inline fun <T> lock(body: () -> T): T = lock(lock as Lock, body)
+
+inline fun <T> lock(lock: Lock, body: () -> T): T {
+	lock.lock()
+	try {
+		return body.invoke()
+	} finally {
+		lock.unlock()
+	}
+}

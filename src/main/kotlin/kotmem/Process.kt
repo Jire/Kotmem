@@ -15,23 +15,15 @@ class Process(val unsafe: UnsafeProcess) {
 	val modules by lazy { HashSet<Module>().addAll(resolveModules(unsafe) as Collection<Module>) }
 
 	private val modulesByName = HashMap<String, Module>()
-
-	fun resolveModule(moduleName: String): Module {
-		if (modulesByName.contains(moduleName)) return modulesByName[moduleName]!!
-		val module = Module(this, resolveModule(unsafe, moduleName))
-		modulesByName.put(moduleName, module)
-		return module
-	}
-
 	private val memoryCache = HashMap<KClass<*>, Memory>()
 
-	fun memoryOf(type: KClass<*>, bytes: Int): Memory {
+	fun memoryOf(type: KClass<*>, bytes: Int) = lock {
 		var memory = memoryCache[type]
 		if (memory == null) {
 			memory = Memory(bytes.toLong())
 			memoryCache.put(type, memory)
 		}
-		return memory
+		memory as Memory
 	}
 
 	inline fun <reified T> read(address: Long): T {
@@ -68,10 +60,17 @@ class Process(val unsafe: UnsafeProcess) {
 			Double::class.qualifiedName -> memory.setDouble(0, data as Double)
 			else -> throw AssertionError("Impossible case of invalid type \"${type.qualifiedName}\"")
 		}
-		if (!writeProcessMemory(unsafe, address, memory, TYPE_TO_BYTES.getRaw(type.qualifiedName)!!))
+		if (!writeProcessMemory(unsafe, address, memory, bytes))
 			throw Win32Exception(Native.getLastError())
 	}
 
 	inline fun <reified T> write(address: Int, data: T): Unit = write(address.toLong(), data)
+
+	fun resolveModule(moduleName: String): Module {
+		if (modulesByName.contains(moduleName)) return modulesByName[moduleName]!!
+		val module = Module(this, resolveModule(unsafe, moduleName))
+		modulesByName.put(moduleName, module)
+		return module
+	}
 
 }

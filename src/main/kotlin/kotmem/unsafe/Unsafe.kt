@@ -39,7 +39,8 @@ fun pidByName(name: String): Int {
 	}
 }
 
-fun openProcess(processID: Int) = UnsafeProcess(processID, Kernel32.OpenProcess(PROCESS_FULL_ACCESS, true, processID))
+fun openProcess(processID: Int, accessFlags: Int = PROCESS_FULL_ACCESS)
+		= UnsafeProcess(processID, Kernel32.OpenProcess(accessFlags, true, processID))
 
 fun resolveModules(process: UnsafeProcess): Set<UnsafeModule> {
 	val list = HashSet<UnsafeModule>()
@@ -81,7 +82,11 @@ fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, b
 class UnsafeProcess(val id: Int, val handle: WinNT.HANDLE)
 class UnsafeModule(val process: UnsafeProcess, val module: HMODULE, val info: LPMODULEINFO)
 
-public val lock = ReentrantReadWriteLock(true)
+fun keyState(keyCode: Int) = User32.GetKeyState(keyCode)
+
+fun isKeyDown(keyCode: Int) = keyState(keyCode) < 0
+
+val lock = ReentrantLock(true)
 
 inline fun <T> lock(body: () -> T): T = lock(lock as Lock, body)
 

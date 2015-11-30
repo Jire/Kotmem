@@ -3,6 +3,7 @@ package kotmem
 import com.sun.jna.*
 import com.sun.jna.platform.win32.*
 import kotmem.unsafe.*
+import java.nio.*
 import java.util.*
 import kotlin.reflect.*
 
@@ -15,15 +16,15 @@ class Process(val unsafe: UnsafeProcess) {
 	val modules by lazy { HashSet<Module>().addAll(resolveModules(unsafe) as Collection<Module>) }
 
 	private val modulesByName = HashMap<String, Module>()
-	private val memoryCache = HashMap<KClass<*>, Memory>()
+	private val memoryCache = HashMap<KClass<*>, ByteBuffer>()
 
-	fun memoryOf(type: KClass<*>, bytes: Int) = lock {
+	fun memoryOf(type: KClass<*>, bytes: Int): ByteBuffer {
 		var memory = memoryCache[type]
 		if (memory == null) {
-			memory = Memory(bytes.toLong())
+			memory = ByteBuffer.allocateDirect(bytes)
 			memoryCache.put(type, memory)
-		}
-		memory as Memory
+		} else memory.clear()
+		return memory!!.order(ByteOrder.nativeOrder())
 	}
 
 	inline fun <reified T> read(address: Long): T {
@@ -32,34 +33,36 @@ class Process(val unsafe: UnsafeProcess) {
 		val memory = memoryOf(type, bytes)
 		if (!readProcessMemory(unsafe, address, memory, bytes))
 			throw Win32Exception(Native.getLastError())
+		memory.rewind()
 		return when (type.qualifiedName) {
-			Boolean::class.qualifiedName -> memory.getByte(0) > 0
-			Byte::class.qualifiedName -> memory.getByte(0)
-			Short::class.qualifiedName -> memory.getShort(0)
-			Int::class.qualifiedName -> memory.getInt(0)
-			Long::class.qualifiedName -> memory.getLong(0)
-			Float::class.qualifiedName -> memory.getFloat(0)
-			Double::class.qualifiedName -> memory.getDouble(0)
+			Boolean::class.qualifiedName -> memory.get() > 0
+			Byte::class.qualifiedName -> memory.get()
+			Short::class.qualifiedName -> memory.short
+			Int::class.qualifiedName -> memory.int
+			Long::class.qualifiedName -> memory.long
+			Float::class.qualifiedName -> memory.float
+			Double::class.qualifiedName -> memory.double
 			else -> throw AssertionError("Impossible case of invalid type \"${type.qualifiedName}\"")
 		} as T
 	}
 
 	inline fun <reified T> read(address: Int): T = read(address.toLong())
 
-	inline fun <reified T> write(address: Long, data: T) {
+	inline fun <reified T> write(address: Long, data: T) = lock {
 		val type = T::class
 		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
 		val memory = memoryOf(type, bytes)
 		when (type.qualifiedName) {
-			Boolean::class.qualifiedName -> memory.setByte(0, if (data as Boolean) 1 else 0)
-			Byte::class.qualifiedName -> memory.setByte(0, data as Byte)
-			Short::class.qualifiedName -> memory.setShort(0, data as Short)
-			Int::class.qualifiedName -> memory.setInt(0, data as Int)
-			Long::class.qualifiedName -> memory.setLong(0, data as Long)
-			Float::class.qualifiedName -> memory.setFloat(0, data as Float)
-			Double::class.qualifiedName -> memory.setDouble(0, data as Double)
+			Boolean::class.qualifiedName -> memory.put((if (data as Boolean) 1 else 0).toByte())
+			Byte::class.qualifiedName -> memory.put(data as Byte)
+			Short::class.qualifiedName -> memory.putShort(data as Short)
+			Int::class.qualifiedName -> memory.putInt(data as Int)
+			Long::class.qualifiedName -> memory.putLong(data as Long)
+			Float::class.qualifiedName -> memory.putFloat(data as Float)
+			Double::class.qualifiedName -> memory.putDouble(data as Double)
 			else -> throw AssertionError("Impossible case of invalid type \"${type.qualifiedName}\"")
 		}
+		memory.flip()
 		if (!writeProcessMemory(unsafe, address, memory, bytes))
 			throw Win32Exception(Native.getLastError())
 	}

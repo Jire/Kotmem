@@ -4,6 +4,7 @@ import com.sun.jna.*
 import com.sun.jna.platform.win32.*
 import com.sun.jna.platform.win32.WinNT.*
 import com.sun.jna.win32.*
+import java.nio.*
 
 object Kernel32 {
 
@@ -16,10 +17,10 @@ object Kernel32 {
 	external fun CloseHandle(hObject: HANDLE): Boolean
 
 	external fun WriteProcessMemory(hProcess: Pointer, lpBaseAddress: Long,
-	                                lpBuffer: Pointer, nSize: Int, lpNumberOfBytesWritten: Int): Int
+	                                lpBuffer: ByteBuffer, nSize: Int, lpNumberOfBytesWritten: Int): Long
 
 	external fun ReadProcessMemory(hProcess: Pointer, lpBaseAddress: Long,
-	                               lpBuffer: Pointer, nSize: Int, lpNumberOfBytesWritten: Int): Int
+	                               lpBuffer: ByteBuffer, nSize: Int, lpNumberOfBytesWritten: Int): Long
 
 	init {
 		Native.register(NativeLibrary.getInstance("Kernel32", W32APIOptions.UNICODE_OPTIONS))

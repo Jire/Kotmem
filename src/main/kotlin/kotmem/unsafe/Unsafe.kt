@@ -4,6 +4,7 @@ import com.sun.jna.*
 import com.sun.jna.platform.win32.*
 import com.sun.jna.platform.win32.WinDef.*
 import com.sun.jna.ptr.*
+import java.nio.*
 import java.util.*
 import java.util.concurrent.locks.*
 
@@ -71,13 +72,11 @@ fun resolveModule(process: UnsafeProcess, moduleName: String) =
 
 fun resolveModuleAddress(module: UnsafeModule) = Pointer.nativeValue(module.info.lpBaseOfDll?.pointer)
 
-fun readProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, bytes: Int) = lock {
-	Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) == 1
-}
+fun readProcessMemory(process: UnsafeProcess, address: Long, buffer: ByteBuffer, bytes: Int) =
+		Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0
 
-fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: Pointer, bytes: Int) = lock {
-	Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) == 1
-}
+fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: ByteBuffer, bytes: Int) =
+		Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0
 
 class UnsafeProcess(val id: Int, val handle: WinNT.HANDLE)
 class UnsafeModule(val process: UnsafeProcess, val module: HMODULE, val info: LPMODULEINFO)

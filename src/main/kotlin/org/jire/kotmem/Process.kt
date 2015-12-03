@@ -69,7 +69,7 @@ class Process(val unsafe: UnsafeProcess) {
 
 	operator inline fun <reified T> set(address: Int, data: T): Unit = set(address.toLong(), data)
 
-	fun module(moduleName: String): Module {
+	operator fun get(moduleName: String): Module {
 		if (modulesByName.contains(moduleName)) return modulesByName[moduleName]!!
 		val module = Module(this, resolveModule(unsafe, moduleName))
 		modulesByName.put(moduleName, module)

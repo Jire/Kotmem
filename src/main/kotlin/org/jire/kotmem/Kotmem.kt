@@ -2,20 +2,24 @@ package org.jire.kotmem
 
 import org.jire.kotmem.unsafe.*
 
-fun processByID(id: Int) = Process(openProcess(id))
+object processes {
 
-inline fun processByID(id: Int, action: (Process) -> Unit): Process {
-	val process = processByID(id)
-	action.invoke(process)
-	return process
-}
+	operator fun get(processID: Int) = Process(openProcess(processID))
 
-fun processByName(name: String): Process = processByID(pidByName(name))
+	operator inline fun get(processID: Int, action: (Process) -> Unit): Process {
+		val process = get(processID)
+		action.invoke(process)
+		return process
+	}
 
-inline fun processByName(name: String, action: (Process) -> Unit): Process {
-	val process = processByName(name)
-	action.invoke(process)
-	return process
+	operator fun get(processName: String) = get(pidByName(processName))
+
+	operator inline fun get(processName: String, action: (Process) -> Unit): Process {
+		val process = get(processName)
+		action.invoke(process)
+		return process
+	}
+	
 }
 
 fun keyState(keyCode: Int) = User32.GetKeyState(keyCode)

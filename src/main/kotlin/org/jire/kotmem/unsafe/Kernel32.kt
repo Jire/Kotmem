@@ -1,10 +1,10 @@
-package kotmem.unsafe
+package org.jire.kotmem.unsafe
 
 import com.sun.jna.*
 import com.sun.jna.platform.win32.*
 import com.sun.jna.platform.win32.WinNT.*
-import com.sun.jna.win32.*
-import java.nio.*
+import com.sun.jna.win32.W32APIOptions
+import java.nio.ByteBuffer
 
 object Kernel32 {
 

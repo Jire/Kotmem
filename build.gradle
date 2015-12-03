@@ -1,5 +1,5 @@
-group 'kotmem'
-version '0.1'
+group 'org.jire.kotmem'
+version '0.2'
 
 apply plugin: 'kotlin'
 
@@ -15,6 +15,7 @@ dependencies {
 	compile 'net.java.dev.jna:jna:4.2.1'
 	compile 'net.java.dev.jna:platform:3.5.2'
 }
+
 buildscript {
 	ext.kotlin_version = '1.0.0-beta-2423'
 	repositories {
@@ -24,6 +25,7 @@ buildscript {
 		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 	}
 }
+
 sourceSets {
 	main.java.srcDirs += 'src/main/kotlin'
 }

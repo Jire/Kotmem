@@ -1,6 +1,6 @@
-package kotmem.unsafe
+package org.jire.kotmem.unsafe
 
-import com.sun.jna.*
+import com.sun.jna.Native
 
 object User32 {
 

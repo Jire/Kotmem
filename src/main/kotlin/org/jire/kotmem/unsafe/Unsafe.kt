@@ -1,11 +1,12 @@
-package kotmem.unsafe
+package org.jire.kotmem.unsafe
 
 import com.sun.jna.*
 import com.sun.jna.platform.win32.*
 import com.sun.jna.platform.win32.WinDef.*
-import com.sun.jna.ptr.*
-import java.nio.*
+import com.sun.jna.ptr.IntByReference
+import java.nio.ByteBuffer
 import java.util.*
+import java.util.concurrent.*
 import java.util.concurrent.locks.*
 
 const val PROCESS_QUERY_INFORMATION = 0x400
@@ -47,7 +48,7 @@ fun resolveModules(process: UnsafeProcess): Set<UnsafeModule> {
 	val list = HashSet<UnsafeModule>()
 
 	val hProcess = process.handle.pointer
-	val modules = arrayOfNulls<WinDef.HMODULE>(1024)
+	val modules = arrayOfNulls<HMODULE>(1024)
 	val needed = IntByReference()
 	if (Psapi.EnumProcessModulesEx(hProcess, modules, modules.size, needed, 1)) {
 		for (i in 0..needed.value / 4) {
@@ -92,4 +93,21 @@ inline fun <T> lock(lock: Lock, body: () -> T): T {
 	} finally {
 		lock.unlock()
 	}
+}
+
+val executor by lazy { UnsafeExecutor() }
+
+class UnsafeExecutor : ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
+		LinkedBlockingQueue<Runnable>() as BlockingQueue<Runnable>) {
+
+	private val cache = HashMap<() -> Unit, () -> Unit>()
+
+	/*inline fun submit(task: () -> Unit): Future<*> {
+		return super.submit(task)
+	}*/
+
+	override fun afterExecute(r: Runnable, t: Throwable) {
+
+	}
+
 }

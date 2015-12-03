@@ -1,11 +1,11 @@
-package kotmem
+package org.jire.kotmem
 
-import com.sun.jna.*
-import com.sun.jna.platform.win32.*
-import kotmem.unsafe.*
+import com.sun.jna.Native
+import com.sun.jna.platform.win32.Win32Exception
+import org.jire.kotmem.unsafe.*
 import java.nio.*
 import java.util.*
-import kotlin.reflect.*
+import kotlin.reflect.KClass
 
 val TYPE_TO_BYTES = mapOf(Boolean::class.qualifiedName to 1, Byte::class.qualifiedName to 1,
 		Short::class.qualifiedName to 2, Int::class.qualifiedName to 4, Long::class.qualifiedName to 8,
@@ -27,7 +27,7 @@ class Process(val unsafe: UnsafeProcess) {
 		return memory!!.order(ByteOrder.nativeOrder())
 	}
 
-	inline fun <reified T> read(address: Long): T {
+	operator inline fun <reified T> get(address: Long): T {
 		val type = T::class
 		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
 		val memory = memoryOf(type, bytes)
@@ -42,13 +42,13 @@ class Process(val unsafe: UnsafeProcess) {
 			Long::class.qualifiedName -> memory.long
 			Float::class.qualifiedName -> memory.float
 			Double::class.qualifiedName -> memory.double
-			else -> throw AssertionError("Impossible case of invalid type \"${type.qualifiedName}\"")
+			else -> throw AssertionError("Impossible case of invalid type \"${type.simpleName}\"")
 		} as T
 	}
 
-	inline fun <reified T> read(address: Int): T = read(address.toLong())
+	operator inline fun <reified T> get(address: Int): T = get(address.toLong())
 
-	inline fun <reified T> write(address: Long, data: T) = lock {
+	operator inline fun <reified T> set(address: Long, data: T) = lock {
 		val type = T::class
 		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
 		val memory = memoryOf(type, bytes)
@@ -60,16 +60,16 @@ class Process(val unsafe: UnsafeProcess) {
 			Long::class.qualifiedName -> memory.putLong(data as Long)
 			Float::class.qualifiedName -> memory.putFloat(data as Float)
 			Double::class.qualifiedName -> memory.putDouble(data as Double)
-			else -> throw AssertionError("Impossible case of invalid type \"${type.qualifiedName}\"")
+			else -> throw AssertionError("Impossible case of invalid type \"${type.simpleName}\"")
 		}
 		memory.flip()
 		if (!writeProcessMemory(unsafe, address, memory, bytes))
 			throw Win32Exception(Native.getLastError())
 	}
 
-	inline fun <reified T> write(address: Int, data: T): Unit = write(address.toLong(), data)
+	operator inline fun <reified T> set(address: Int, data: T): Unit = set(address.toLong(), data)
 
-	fun resolveModule(moduleName: String): Module {
+	fun module(moduleName: String): Module {
 		if (modulesByName.contains(moduleName)) return modulesByName[moduleName]!!
 		val module = Module(this, resolveModule(unsafe, moduleName))
 		modulesByName.put(moduleName, module)

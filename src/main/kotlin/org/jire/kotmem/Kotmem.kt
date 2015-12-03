@@ -1,6 +1,6 @@
-package kotmem
+package org.jire.kotmem
 
-import kotmem.unsafe.*
+import org.jire.kotmem.unsafe.*
 
 fun processByID(id: Int) = Process(openProcess(id))
 

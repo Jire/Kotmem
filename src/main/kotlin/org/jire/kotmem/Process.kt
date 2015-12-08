@@ -11,6 +11,11 @@ val TYPE_TO_BYTES = mapOf(Boolean::class.qualifiedName to 1, Byte::class.qualifi
 		Short::class.qualifiedName to 2, Int::class.qualifiedName to 4, Long::class.qualifiedName to 8,
 		Float::class.qualifiedName to 4, Double::class.qualifiedName to 8)
 
+val TYPE_TO_QN = mapOf(Boolean::class to Boolean::class.qualifiedName, Byte::class to Byte::class.qualifiedName,
+		Short::class to Short::class.qualifiedName, Int::class to Int::class.qualifiedName,
+		Long::class to Long::class.qualifiedName, Float::class to Float::class.qualifiedName,
+		Double::class to Double::class.qualifiedName)
+
 class Process(val unsafe: UnsafeProcess) {
 
 	val modules by lazy { HashSet<Module>().addAll(resolveModules(unsafe) as Collection<Module>) }
@@ -29,19 +34,20 @@ class Process(val unsafe: UnsafeProcess) {
 
 	operator inline fun <reified T> get(address: Long): T {
 		val type = T::class
-		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
+		val qn = TYPE_TO_QN.getRaw(type)!!
+		val bytes = TYPE_TO_BYTES.getRaw(qn)!!
 		val memory = memoryOf(type, bytes)
 		if (!readProcessMemory(unsafe, address, memory, bytes))
 			throw Win32Exception(Native.getLastError())
 		memory.rewind()
-		return when (type.qualifiedName) {
-			Boolean::class.qualifiedName -> memory.get() > 0
-			Byte::class.qualifiedName -> memory.get()
-			Short::class.qualifiedName -> memory.short
-			Int::class.qualifiedName -> memory.int
-			Long::class.qualifiedName -> memory.long
-			Float::class.qualifiedName -> memory.float
-			Double::class.qualifiedName -> memory.double
+		return when (qn) {
+			TYPE_TO_QN.getRaw(Boolean::class) -> memory.get() > 0
+			TYPE_TO_QN.getRaw(Byte::class) -> memory.get()
+			TYPE_TO_QN.getRaw(Short::class) -> memory.short
+			TYPE_TO_QN.getRaw(Int::class) -> memory.int
+			TYPE_TO_QN.getRaw(Long::class) -> memory.long
+			TYPE_TO_QN.getRaw(Float::class) -> memory.float
+			TYPE_TO_QN.getRaw(Double::class) -> memory.double
 			else -> throw AssertionError("Impossible case of invalid type \"${type.simpleName}\"")
 		} as T
 	}
@@ -50,16 +56,17 @@ class Process(val unsafe: UnsafeProcess) {
 
 	operator inline fun <reified T> set(address: Long, data: T) = lock {
 		val type = T::class
-		val bytes = TYPE_TO_BYTES.getRaw(type.qualifiedName)!!
+		val qn = TYPE_TO_QN.getRaw(type)!!
+		val bytes = TYPE_TO_BYTES.getRaw(qn)!!
 		val memory = memoryOf(type, bytes)
-		when (type.qualifiedName) {
-			Boolean::class.qualifiedName -> memory.put((if (data as Boolean) 1 else 0).toByte())
-			Byte::class.qualifiedName -> memory.put(data as Byte)
-			Short::class.qualifiedName -> memory.putShort(data as Short)
-			Int::class.qualifiedName -> memory.putInt(data as Int)
-			Long::class.qualifiedName -> memory.putLong(data as Long)
-			Float::class.qualifiedName -> memory.putFloat(data as Float)
-			Double::class.qualifiedName -> memory.putDouble(data as Double)
+		when (qn) {
+			TYPE_TO_QN.getRaw(Boolean::class) -> memory.put((if (data as Boolean) 1 else 0).toByte())
+			TYPE_TO_QN.getRaw(Byte::class) -> memory.put(data as Byte)
+			TYPE_TO_QN.getRaw(Short::class) -> memory.putShort(data as Short)
+			TYPE_TO_QN.getRaw(Int::class) -> memory.putInt(data as Int)
+			TYPE_TO_QN.getRaw(Long::class) -> memory.putLong(data as Long)
+			TYPE_TO_QN.getRaw(Float::class) -> memory.putFloat(data as Float)
+			TYPE_TO_QN.getRaw(Double::class) -> memory.putDouble(data as Double)
 			else -> throw AssertionError("Impossible case of invalid type \"${type.simpleName}\"")
 		}
 		memory.flip()

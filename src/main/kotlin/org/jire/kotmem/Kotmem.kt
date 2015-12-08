@@ -8,7 +8,7 @@ object processes {
 
 	operator inline fun get(processID: Int, action: (Process) -> Unit): Process {
 		val process = get(processID)
-		action.invoke(process)
+		action(process)
 		return process
 	}
 
@@ -16,7 +16,7 @@ object processes {
 
 	operator inline fun get(processName: String, action: (Process) -> Unit): Process {
 		val process = get(processName)
-		action.invoke(process)
+		action(process)
 		return process
 	}
 	

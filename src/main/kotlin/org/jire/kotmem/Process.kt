@@ -21,60 +21,42 @@ class Process(val unsafe: UnsafeProcess) {
 	val modules by lazy { HashSet<Module>().addAll(resolveModules(unsafe) as Collection<Module>) }
 
 	private val modulesByName = HashMap<String, Module>()
-	private val memoryCache = HashMap<KClass<*>, ByteBuffer>()
+	private val bufferCache = HashMap<KClass<*>, ByteBuffer>()
 
-	fun memoryOf(type: KClass<*>, bytes: Int): ByteBuffer {
-		var memory = memoryCache[type]
-		if (memory == null) {
-			memory = ByteBuffer.allocateDirect(bytes)
-			memoryCache.put(type, memory)
-		} else memory.clear()
-		return memory!!.order(ByteOrder.nativeOrder())
+	fun bufferOf(type: KClass<*>, bytes: Int): ByteBuffer {
+		var buf = bufferCache[type]
+		if (buf == null) {
+			buf = ByteBuffer.allocateDirect(bytes)
+			bufferCache.put(type, buf)
+		} else buf.clear()
+		return buf!!.order(ByteOrder.nativeOrder())
 	}
 
-	operator inline fun <reified T> get(address: Long): T {
+	operator inline fun <reified T : Any> get(address: Long): T {
 		val type = T::class
-		val qn = TYPE_TO_QN.getRaw(type)!!
-		val bytes = TYPE_TO_BYTES.getRaw(qn)!!
-		val memory = memoryOf(type, bytes)
-		if (!readProcessMemory(unsafe, address, memory, bytes))
+		val dataType = dataTypeOf(type)
+		val bytes = dataType.bytes
+		val buf = bufferOf(type, bytes)
+		if (!readProcessMemory(unsafe, address, buf, bytes))
 			throw Win32Exception(Native.getLastError())
-		memory.rewind()
-		return when (qn) {
-			TYPE_TO_QN.getRaw(Boolean::class) -> memory.get() > 0
-			TYPE_TO_QN.getRaw(Byte::class) -> memory.get()
-			TYPE_TO_QN.getRaw(Short::class) -> memory.short
-			TYPE_TO_QN.getRaw(Int::class) -> memory.int
-			TYPE_TO_QN.getRaw(Long::class) -> memory.long
-			TYPE_TO_QN.getRaw(Float::class) -> memory.float
-			TYPE_TO_QN.getRaw(Double::class) -> memory.double
-			else -> throw AssertionError("Impossible case of invalid type \"${type.simpleName}\"")
-		} as T
+		buf.rewind()
+		return dataType.read(buf)
 	}
 
-	operator inline fun <reified T> get(address: Int): T = get(address.toLong())
+	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
 
-	operator inline fun <reified T> set(address: Long, data: T) = lock {
+	operator inline fun <reified T : Any> set(address: Long, data: T) = lock {
 		val type = T::class
-		val qn = TYPE_TO_QN.getRaw(type)!!
-		val bytes = TYPE_TO_BYTES.getRaw(qn)!!
-		val memory = memoryOf(type, bytes)
-		when (qn) {
-			TYPE_TO_QN.getRaw(Boolean::class) -> memory.put((if (data as Boolean) 1 else 0).toByte())
-			TYPE_TO_QN.getRaw(Byte::class) -> memory.put(data as Byte)
-			TYPE_TO_QN.getRaw(Short::class) -> memory.putShort(data as Short)
-			TYPE_TO_QN.getRaw(Int::class) -> memory.putInt(data as Int)
-			TYPE_TO_QN.getRaw(Long::class) -> memory.putLong(data as Long)
-			TYPE_TO_QN.getRaw(Float::class) -> memory.putFloat(data as Float)
-			TYPE_TO_QN.getRaw(Double::class) -> memory.putDouble(data as Double)
-			else -> throw AssertionError("Impossible case of invalid type \"${type.simpleName}\"")
-		}
-		memory.flip()
-		if (!writeProcessMemory(unsafe, address, memory, bytes))
+		val dataType = dataTypeOf(type)
+		val bytes = dataType.bytes
+		val buf = bufferOf(type, bytes)
+		dataType.write(buf, data)
+		buf.flip()
+		if (!writeProcessMemory(unsafe, address, buf, bytes))
 			throw Win32Exception(Native.getLastError())
 	}
 
-	operator inline fun <reified T> set(address: Int, data: T): Unit = set(address.toLong(), data)
+	operator inline fun <reified T : Any> set(address: Int, data: T): Unit = set(address.toLong(), data)
 
 	operator fun get(moduleName: String): Module {
 		if (modulesByName.contains(moduleName)) return modulesByName[moduleName]!!

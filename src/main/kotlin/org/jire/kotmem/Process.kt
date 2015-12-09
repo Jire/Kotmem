@@ -7,15 +7,6 @@ import java.nio.*
 import java.util.*
 import kotlin.reflect.KClass
 
-val TYPE_TO_BYTES = mapOf(Boolean::class.qualifiedName to 1, Byte::class.qualifiedName to 1,
-		Short::class.qualifiedName to 2, Int::class.qualifiedName to 4, Long::class.qualifiedName to 8,
-		Float::class.qualifiedName to 4, Double::class.qualifiedName to 8)
-
-val TYPE_TO_QN = mapOf(Boolean::class to Boolean::class.qualifiedName, Byte::class to Byte::class.qualifiedName,
-		Short::class to Short::class.qualifiedName, Int::class to Int::class.qualifiedName,
-		Long::class to Long::class.qualifiedName, Float::class to Float::class.qualifiedName,
-		Double::class to Double::class.qualifiedName)
-
 class Process(val unsafe: UnsafeProcess) {
 
 	val modules by lazy { HashSet<Module>().addAll(resolveModules(unsafe) as Collection<Module>) }

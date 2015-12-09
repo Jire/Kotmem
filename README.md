@@ -43,5 +43,9 @@ We can also use a module to read and write. Doing so will use the module's addre
 
 ###Caution!
 
-This project is not yet ready for production. It currently depends on the Kotlin team to fix a few bugs so please 
-refrain from using it until such bugs are fixed.
+This project is not yet ready for production. Expect lots of breaking changes.
+
+Also currently there is a bug in Kotlin which prevents using *get* and *set* with operators. The workaround is that 
+you must use explicit function calls to *get* and *set* (e.g. `val cafeBabe: Int = process.get(0xCAFEBABE)`) until the 
+issue
+ is fixed.

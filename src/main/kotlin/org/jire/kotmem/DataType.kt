@@ -28,9 +28,9 @@ sealed class DataType<T : Any>(val bytes: Int, private val read: (ByteBuffer) ->
 
 }
 
-private val kClassToType = mapOf(Byte::class to DataType.ByteDataType, Short::class to DataType.ShortDataType,
-		Int::class to DataType.IntDataType, Long::class to DataType.LongDataType,
-		Float::class to DataType.FloatDataType, Double::class to DataType.DoubleDataType,
-		Boolean::class to DataType.BooleanDataType)
+private val kClassToType = mapOf(java.lang.Byte::class to DataType.ByteDataType,
+		java.lang.Short::class to DataType.ShortDataType, java.lang.Integer::class to DataType.IntDataType,
+		java.lang.Long::class to DataType.LongDataType, java.lang.Float::class to DataType.FloatDataType,
+		java.lang.Double::class to DataType.DoubleDataType, java.lang.Boolean::class to DataType.BooleanDataType)
 
 fun <T : Any> dataTypeOf(kClass: KClass<T>) = kClassToType.getRaw(kClass) as DataType<T>

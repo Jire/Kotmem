@@ -23,9 +23,15 @@ object processes {
 
 }
 
-fun keyState(keyCode: Int) = User32.GetKeyState(keyCode)
+object keys {
 
-fun isKeyDown(keyCode: Int) = keyState(keyCode) < 0
+	@JvmStatic fun state(vKey: Int) = User32.GetKeyState(vKey)
+
+	operator fun invoke(vKey: Int) = state(vKey)
+
+	@JvmStatic operator fun get(vKey: Int) = state(vKey) < 0
+
+}
 
 val kotmemLock = ReentrantLock(true)
 

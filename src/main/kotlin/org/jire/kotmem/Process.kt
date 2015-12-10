@@ -31,7 +31,7 @@ class Process(val unsafe: UnsafeProcess) {
 		if (!readProcessMemory(unsafe, address, buf, bytes))
 			throw Win32Exception(Native.getLastError())
 		buf.rewind()
-		return dataType.read(buf)
+		dataType.read(buf)
 	}
 
 	operator inline fun <reified T : Any> get(address: Int): T = get<T>(address.toLong())

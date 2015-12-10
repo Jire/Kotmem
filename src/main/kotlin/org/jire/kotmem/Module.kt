@@ -10,7 +10,7 @@ class Module(val process: Process, val unsafe: UnsafeModule) {
 
 	operator inline fun <reified T : Any> get(offset: Long) = process.get<T>(address + offset)
 
-	operator inline fun <reified T : Any> get(offset: Int): T = get(offset.toLong())
+	operator inline fun <reified T : Any> get(offset: Int): T = get<T>(offset.toLong())
 
 	operator inline fun <reified T : Any> set(offset: Long, data: T) = process.set(address + offset, data)
 

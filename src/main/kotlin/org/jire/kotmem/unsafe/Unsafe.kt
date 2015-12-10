@@ -6,8 +6,6 @@ import com.sun.jna.platform.win32.WinDef.*
 import com.sun.jna.ptr.IntByReference
 import java.nio.ByteBuffer
 import java.util.*
-import java.util.concurrent.*
-import java.util.concurrent.locks.*
 
 const val PROCESS_QUERY_INFORMATION = 0x400
 const val PROCESS_VM_READ = 0x10
@@ -15,16 +13,6 @@ const val PROCESS_VM_WRITE = 0x20
 const val PROCESS_VM_OPERATION = 0x8
 
 const val PROCESS_FULL_ACCESS = PROCESS_QUERY_INFORMATION or PROCESS_VM_READ or PROCESS_VM_WRITE or PROCESS_VM_OPERATION
-
-fun <T : PointerType?> combinePointerTypes(objects: Array<T>): Pointer {
-	val memory = Memory(Pointer.SIZE * objects.size.toLong())
-	var offset = 0L
-	for (obj in objects) {
-		memory.setPointer(Pointer.SIZE * offset, if (obj == null) null else obj.getPointer())
-		offset++
-	}
-	return memory
-}
 
 fun pidByName(name: String): Int {
 	val snapshot = Kernel32.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPALL, 0)
@@ -81,33 +69,3 @@ fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: ByteBuffer
 
 class UnsafeProcess(val id: Int, val handle: WinNT.HANDLE)
 class UnsafeModule(val process: UnsafeProcess, val module: HMODULE, val info: LPMODULEINFO)
-
-val lock = ReentrantLock(true)
-
-inline fun <T> lock(body: () -> T): T = lock(lock as Lock, body)
-
-inline fun <T> lock(lock: Lock, body: () -> T): T {
-	lock.lock()
-	try {
-		return body.invoke()
-	} finally {
-		lock.unlock()
-	}
-}
-
-val executor by lazy { UnsafeExecutor() }
-
-class UnsafeExecutor : ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
-		LinkedBlockingQueue<Runnable>() as BlockingQueue<Runnable>) {
-
-	private val cache = HashMap<() -> Unit, () -> Unit>()
-
-	/*inline fun submit(task: () -> Unit): Future<*> {
-		return super.submit(task)
-	}*/
-
-	override fun afterExecute(r: Runnable, t: Throwable) {
-
-	}
-
-}

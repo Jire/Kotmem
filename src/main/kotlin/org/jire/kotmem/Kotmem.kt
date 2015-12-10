@@ -1,6 +1,7 @@
 package org.jire.kotmem
 
 import org.jire.kotmem.unsafe.*
+import java.util.concurrent.locks.*
 
 object processes {
 
@@ -19,9 +20,22 @@ object processes {
 		action(process)
 		return process
 	}
-	
+
 }
 
 fun keyState(keyCode: Int) = User32.GetKeyState(keyCode)
 
 fun isKeyDown(keyCode: Int) = keyState(keyCode) < 0
+
+val kotmemLock = ReentrantLock(true)
+
+inline fun <T> lock(body: () -> T): T = lock(kotmemLock as Lock, body)
+
+inline fun <T> lock(lock: Lock, body: () -> T): T {
+	lock.lock()
+	try {
+		return body.invoke()
+	} finally {
+		lock.unlock()
+	}
+}

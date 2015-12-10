@@ -23,7 +23,7 @@ class Process(val unsafe: UnsafeProcess) {
 		return buf!!.order(ByteOrder.nativeOrder())
 	}
 
-	operator inline fun <reified T : Any> get(address: Long): T {
+	operator inline fun <reified T : Any> get(address: Long) = lock {
 		val type = T::class
 		val dataType = dataTypeOf(type)
 		val bytes = dataType.bytes
@@ -34,7 +34,7 @@ class Process(val unsafe: UnsafeProcess) {
 		return dataType.read(buf)
 	}
 
-	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
+	operator inline fun <reified T : Any> get(address: Int): T = get<T>(address.toLong())
 
 	operator inline fun <reified T : Any> set(address: Long, data: T) = lock {
 		val type = T::class

@@ -34,7 +34,7 @@ class Process(val unsafe: UnsafeProcess) {
 		dataType.read(buf)
 	}
 
-	operator inline fun <reified T : Any> get(address: Int): T = get<T>(address.toLong())
+	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
 
 	operator inline fun <reified T : Any> set(address: Long, data: T) = lock {
 		val type = T::class

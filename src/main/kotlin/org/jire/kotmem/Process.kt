@@ -1,20 +1,19 @@
 package org.jire.kotmem
 
-import com.sun.jna.Native
+import com.sun.jna.*
 import com.sun.jna.platform.win32.Win32Exception
 import org.jire.kotmem.unsafe.*
 import java.nio.*
 import java.util.*
-import kotlin.reflect.KClass
 
 class Process(val unsafe: UnsafeProcess) {
 
 	val modules by lazy { HashSet<Module>().addAll(resolveModules(unsafe) as Collection<Module>) }
 
-	private val modulesByName = HashMap<String, Module>()
-	private val bufferCache = HashMap<KClass<*>, ByteBuffer>()
+	private val moduleCache = HashMap<String, Module>()
+	private val bufferCache = HashMap<Class<*>, ByteBuffer>()
 
-	fun bufferOf(type: KClass<*>, bytes: Int): ByteBuffer {
+	fun bufferOf(type: Class<*>, bytes: Int): ByteBuffer {
 		var buf = bufferCache[type]
 		if (buf == null) {
 			buf = ByteBuffer.allocateDirect(bytes)
@@ -23,10 +22,25 @@ class Process(val unsafe: UnsafeProcess) {
 		return buf!!.order(ByteOrder.nativeOrder())
 	}
 
-	operator inline fun <reified T : Any> get(address: Long) = lock {
-		val type = T::class
+	private val pointer = ThreadLocal.withInitial { Pointer(0) }
+
+	fun pointerOf(address: Long): Pointer {
+		val pointer = pointer.get()
+		Pointer.nativeValue(pointer, address)
+		return pointer
+	}
+
+	fun pointerOf(address: Int) = pointerOf(address.toLong())
+
+	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
+
+	operator inline fun <reified T : Any> get(address: Long): T = get(address, dataTypeOf(T::class.java).bytes)
+
+	operator inline fun <reified T : Any> get(address: Long, size: Int): T = get(pointerOf(address), size)
+
+	operator inline fun <reified T : Any> get(address: Pointer, bytes: Int) = lock {
+		val type = T::class.java
 		val dataType = dataTypeOf(type)
-		val bytes = dataType.bytes
 		val buf = bufferOf(type, bytes)
 		if (!readProcessMemory(unsafe, address, buf, bytes))
 			throw Win32Exception(Native.getLastError())
@@ -34,10 +48,10 @@ class Process(val unsafe: UnsafeProcess) {
 		dataType.read(buf)
 	}
 
-	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
+	operator inline fun <reified T : Any> set(address: Long, data: T) = set(pointerOf(address), data)
 
-	operator inline fun <reified T : Any> set(address: Long, data: T) = lock {
-		val type = T::class
+	operator inline fun <reified T : Any> set(address: Pointer, data: T) = lock {
+		val type = T::class.java
 		val dataType = dataTypeOf(type)
 		val bytes = dataType.bytes
 		val buf = bufferOf(type, bytes)
@@ -50,9 +64,9 @@ class Process(val unsafe: UnsafeProcess) {
 	operator inline fun <reified T : Any> set(address: Int, data: T): Unit = set(address.toLong(), data)
 
 	operator fun get(moduleName: String): Module {
-		if (modulesByName.contains(moduleName)) return modulesByName[moduleName]!!
+		if (moduleCache.contains(moduleName)) return moduleCache[moduleName]!!
 		val module = Module(this, resolveModule(unsafe, moduleName))
-		modulesByName.put(moduleName, module)
+		moduleCache.put(moduleName, module)
 		return module
 	}
 

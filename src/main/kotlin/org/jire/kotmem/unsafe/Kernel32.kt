@@ -16,10 +16,10 @@ object Kernel32 {
 
 	external fun CloseHandle(hObject: HANDLE): Boolean
 
-	external fun WriteProcessMemory(hProcess: Pointer, lpBaseAddress: Long,
+	external fun WriteProcessMemory(hProcess: Pointer, lpBaseAddress: Pointer,
 	                                lpBuffer: ByteBuffer, nSize: Int, lpNumberOfBytesWritten: Int): Long
 
-	external fun ReadProcessMemory(hProcess: Pointer, lpBaseAddress: Long,
+	external fun ReadProcessMemory(hProcess: Pointer, lpBaseAddress: Pointer,
 	                               lpBuffer: ByteBuffer, nSize: Int, lpNumberOfBytesWritten: Int): Long
 
 	init {

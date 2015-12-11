@@ -1,7 +1,7 @@
 package org.jire.kotmem
 
 import java.nio.ByteBuffer
-import kotlin.reflect.KClass
+import java.util.*
 
 sealed class DataType<T : Any>(val bytes: Int, private val read: (ByteBuffer) -> T,
                                private val write: (ByteBuffer, T) -> Unit) {
@@ -22,15 +22,27 @@ sealed class DataType<T : Any>(val bytes: Int, private val read: (ByteBuffer) ->
 		buf.put((if (v) 1 else 0).toByte())
 	})
 
+	object ByteBufferDataType : DataType<ByteBuffer>(-1, { it }, { buf, v -> })
+
 	fun read(buf: ByteBuffer) = read.invoke(buf)
 
 	fun write(buf: ByteBuffer, value: T) = write.invoke(buf, value)
 
 }
 
-private val kClassToType = mapOf(java.lang.Byte::class to DataType.ByteDataType,
-		java.lang.Short::class to DataType.ShortDataType, java.lang.Integer::class to DataType.IntDataType,
-		java.lang.Long::class to DataType.LongDataType, java.lang.Float::class to DataType.FloatDataType,
-		java.lang.Double::class to DataType.DoubleDataType, java.lang.Boolean::class to DataType.BooleanDataType)
+private val classToType = mapDataTypes()
 
-fun <T : Any> dataTypeOf(kClass: KClass<T>) = kClassToType.getRaw(kClass) as DataType<T>
+private fun mapDataTypes(): HashMap<Class<*>, DataType<*>> {
+	val map = HashMap<Class<*>, DataType<*>>()
+	map.put(java.lang.Byte::class.java, DataType.ByteDataType)
+	map.put(java.lang.Short::class.java, DataType.ShortDataType)
+	map.put(java.lang.Integer::class.java, DataType.IntDataType)
+	map.put(java.lang.Long::class.java, DataType.LongDataType)
+	map.put(java.lang.Float::class.java, DataType.FloatDataType)
+	map.put(java.lang.Double::class.java, DataType.DoubleDataType)
+	map.put(java.lang.Boolean::class.java, DataType.BooleanDataType)
+	map.put(ByteBuffer::class.java, DataType.ByteBufferDataType)
+	return map
+}
+
+fun <T : Any> dataTypeOf(`class`: Class<T>) = classToType.getRaw(`class`) as DataType<T>

@@ -8,6 +8,10 @@ class Module(val process: Process, val unsafe: UnsafeModule) {
 
 	val address by lazy { resolveModuleAddress(unsafe) }
 
+	val pointer = unsafe.module.pointer!!
+
+	val size = unsafe.info.SizeOfImage!!
+
 	operator inline fun <reified T : Any> get(offset: Long) = process.get<T>(address + offset)
 
 	operator inline fun <reified T : Any> get(offset: Int): T = get(offset.toLong())

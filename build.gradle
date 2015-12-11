@@ -1,5 +1,5 @@
 group 'org.jire.kotmem'
-version '0.3'
+version '0.4'
 
 apply plugin: 'kotlin'
 

@@ -59,12 +59,12 @@ fun resolveModuleName(module: UnsafeModule): String {
 fun resolveModule(process: UnsafeProcess, moduleName: String) =
 		resolveModules(process).first { moduleName == resolveModuleName(it) }
 
-fun resolveModuleAddress(module: UnsafeModule) = Pointer.nativeValue(module.info.lpBaseOfDll?.pointer)
+fun resolveModuleAddress(module: UnsafeModule) = Pointer.nativeValue(module.info.lpBaseOfDll!!.pointer)
 
-fun readProcessMemory(process: UnsafeProcess, address: Long, buffer: ByteBuffer, bytes: Int) =
+fun readProcessMemory(process: UnsafeProcess, address: Pointer, buffer: ByteBuffer, bytes: Int) =
 		Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0
 
-fun writeProcessMemory(process: UnsafeProcess, address: Long, buffer: ByteBuffer, bytes: Int) =
+fun writeProcessMemory(process: UnsafeProcess, address: Pointer, buffer: ByteBuffer, bytes: Int) =
 		Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0
 
 class UnsafeProcess(val id: Int, val handle: WinNT.HANDLE)

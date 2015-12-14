@@ -1,7 +1,8 @@
 package org.jire.kotmem
 
 import org.jire.kotmem.unsafe.*
-import java.util.concurrent.locks.*
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 
 object processes {
 
@@ -33,9 +34,9 @@ object keys {
 
 }
 
-val kotmemLock = ReentrantLock(true)
+var kotmemLock: Lock = ReentrantLock(true)
 
-inline fun <T> lock(body: () -> T): T = lock(kotmemLock as Lock, body)
+inline fun <T> lock(body: () -> T): T = lock(kotmemLock, body)
 
 inline fun <T> lock(lock: Lock, body: () -> T): T {
 	lock.lock()

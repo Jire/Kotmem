@@ -1,9 +1,11 @@
 package org.jire.kotmem
 
-import com.sun.jna.*
+import com.sun.jna.Native
+import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Win32Exception
 import org.jire.kotmem.unsafe.*
-import java.nio.*
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.*
 
 class Process(val unsafe: UnsafeProcess) {
@@ -48,7 +50,7 @@ class Process(val unsafe: UnsafeProcess) {
 		dataType.read(buf)
 	}
 
-	operator inline fun <reified T : Any> set(address: Long, data: T) = set(pointerOf(address), data)
+	operator inline fun <reified T : Any> set(address: Long, data: T): Unit = set(pointerOf(address), data)
 
 	operator inline fun <reified T : Any> set(address: Pointer, data: T) = lock {
 		val type = T::class.java

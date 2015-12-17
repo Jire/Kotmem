@@ -1,8 +1,12 @@
+@file:JvmName("Unsafe")
+
 package org.jire.kotmem.unsafe
 
-import com.sun.jna.*
-import com.sun.jna.platform.win32.*
-import com.sun.jna.platform.win32.WinDef.*
+import com.sun.jna.Native
+import com.sun.jna.Pointer
+import com.sun.jna.platform.win32.Tlhelp32
+import com.sun.jna.platform.win32.WinDef.HMODULE
+import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.ptr.IntByReference
 import java.nio.ByteBuffer
 import java.util.*

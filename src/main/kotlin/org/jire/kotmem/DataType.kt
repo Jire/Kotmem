@@ -1,3 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("Kotmem")
+
 package org.jire.kotmem
 
 import java.nio.ByteBuffer

@@ -17,7 +17,7 @@ Now let's use the process to read at some address. Note that the type can't be i
 
     val cafeBabe: Int = process[0xCAFEBABE]
 
-Here the compiler can infer that the type is `boolean`, thus we can omit.
+Here the compiler can infer that the type is `Boolean`, thus we can omit.
 
     if (process[0xBADCAFE]) println("We're in a bad cafe!")
 

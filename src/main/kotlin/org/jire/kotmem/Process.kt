@@ -14,6 +14,7 @@ class Process(val unsafe: UnsafeProcess) {
 
 	private val moduleCache = HashMap<String, Module>()
 	private val bufferCache = HashMap<Class<*>, ByteBuffer>()
+	private val pointer = ThreadLocal.withInitial { Pointer(0) }
 
 	fun bufferOf(type: Class<*>, bytes: Int): ByteBuffer {
 		var buf = bufferCache[type]
@@ -23,8 +24,6 @@ class Process(val unsafe: UnsafeProcess) {
 		} else buf.clear()
 		return buf!!.order(ByteOrder.nativeOrder())
 	}
-
-	private val pointer = ThreadLocal.withInitial { Pointer(0) }
 
 	fun pointerOf(address: Long): Pointer {
 		val pointer = pointer.get()

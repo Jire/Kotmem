@@ -1,18 +1,12 @@
 package org.jire.kotmem
 
-import org.jire.kotmem.unsafe.*
+abstract class Module(val process: Process<*>) {
 
-class Module(val process: Process, val unsafe: UnsafeModule) {
+	abstract val name: String
 
-	val name by lazy { resolveModuleName(unsafe) }
+	abstract val address: Long
 
-	val address by lazy { resolveModuleAddress(unsafe) }
-
-	val pointer = unsafe.module.pointer!!
-
-	val size = unsafe.info.SizeOfImage!!
-
-	operator inline fun <reified T : Any> get(offset: Long) = process.get<T>(address + offset)
+	operator inline fun <reified T : Any> get(offset: Long): T = process.get(address + offset)
 
 	operator inline fun <reified T : Any> get(offset: Int): T = get(offset.toLong())
 

@@ -1,4 +1,4 @@
-package org.jire.kotmem.unsafe
+package org.jire.kotmem.win32
 
 import com.sun.jna.*
 import com.sun.jna.platform.win32.Tlhelp32

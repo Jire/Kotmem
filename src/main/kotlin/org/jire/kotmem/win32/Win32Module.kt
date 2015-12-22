@@ -10,8 +10,8 @@ class Win32Module(process: Win32Process, val hModule: WinDef.HMODULE,
 
 	override val address by lazy { resolveModuleAddress(this) }
 
-	val pointer = hModule.pointer!!
+	override val pointer = hModule.pointer!!
 
-	val size = lpModuleInfo.SizeOfImage!!
+	override val size = lpModuleInfo.SizeOfImage!!
 
 }

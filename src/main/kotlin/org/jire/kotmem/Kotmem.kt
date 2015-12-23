@@ -13,9 +13,9 @@ import java.util.concurrent.locks.ReentrantLock
 
 object processes {
 
-	operator fun get(processID: Int): Process<*> = openProcess(processID) // TODO choose platform
+	operator fun get(processID: Int): Process = openProcess(processID) // TODO choose platform
 
-	operator inline fun get(processID: Int, action: (Process<*>) -> Unit): Process<*> {
+	operator inline fun get(processID: Int, action: (Process) -> Unit): Process {
 		val process = get(processID)
 		action(process)
 		return process
@@ -23,7 +23,7 @@ object processes {
 
 	operator fun get(processName: String) = get(pidByName(processName))
 
-	operator inline fun get(processName: String, action: (Process<*>) -> Unit): Process<*> {
+	operator inline fun get(processName: String, action: (Process) -> Unit): Process {
 		val process = get(processName)
 		action(process)
 		return process

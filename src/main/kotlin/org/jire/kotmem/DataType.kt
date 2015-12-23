@@ -25,8 +25,6 @@ sealed class DataType<T : Any>(val bytes: Int, private val read: (ByteBuffer) ->
 		buf.put((if (v) 1 else 0).toByte())
 	})
 
-	object ByteBufferDataType : DataType<ByteBuffer>(-1, { it }, { buf, v -> })
-
 	fun read(buf: ByteBuffer) = read.invoke(buf)
 
 	fun write(buf: ByteBuffer, value: T) = write.invoke(buf, value)
@@ -44,7 +42,6 @@ private fun mapDataTypes(): HashMap<Class<*>, DataType<*>> {
 	map.put(java.lang.Float::class.java, DataType.FloatDataType)
 	map.put(java.lang.Double::class.java, DataType.DoubleDataType)
 	map.put(java.lang.Boolean::class.java, DataType.BooleanDataType)
-	map.put(ByteBuffer::class.java, DataType.ByteBufferDataType)
 	return map
 }
 

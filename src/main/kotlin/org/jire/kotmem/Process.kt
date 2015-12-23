@@ -4,9 +4,9 @@ import com.sun.jna.Pointer
 import java.nio.ByteBuffer
 import java.util.*
 
-abstract class Process<M : Module> {
+abstract class Process {
 
-	private val moduleCache = HashMap<String, M>()
+	private val moduleCache = HashMap<String, Module>()
 
 	operator inline fun <reified T : Any> get(address: Pointer, dataType: DataType<T>): T = lock {
 		val type = T::class.java
@@ -15,6 +15,21 @@ abstract class Process<M : Module> {
 		read(address, buffer, bytes)
 		buffer.rewind()
 		dataType.read(buffer)
+	}
+
+	/**
+	 * Reads the specified amount of bytes at the address into a non-cached `ByteBuffer`.
+	 *
+	 * *Warning:* This method should not be used often, it creates a buffer of the specified bytes size.
+	 *
+	 * @param address A pointer to the address to read from.
+	 * @param bytes The amount of bytes to read into the buffer.
+	 * @return The non-cached `ByteBuffer`.
+	 */
+	operator fun get(address: Pointer, bytes: Int): ByteBuffer {
+		val buffer = ByteBuffer.allocateDirect(bytes)
+		lock { read(address, buffer, bytes) }
+		return buffer
 	}
 
 	operator inline fun <reified T : Any> get(address: Long, dataType: DataType<T>): T = get(cachedPointer(address), dataType)
@@ -37,7 +52,7 @@ abstract class Process<M : Module> {
 
 	operator inline fun <reified T : Any> set(address: Int, data: T): Unit = set(address.toLong(), data)
 
-	operator fun get(moduleName: String): M {
+	operator fun get(moduleName: String): Module {
 		if (moduleCache.contains(moduleName)) return moduleCache[moduleName]!!
 		val module = resolveModule(moduleName)
 		moduleCache.put(moduleName, module)
@@ -48,6 +63,6 @@ abstract class Process<M : Module> {
 
 	protected abstract fun write(address: Pointer, buffer: ByteBuffer, bytes: Int)
 
-	protected abstract fun resolveModule(moduleName: String): M
+	protected abstract fun resolveModule(moduleName: String): Module
 
 }

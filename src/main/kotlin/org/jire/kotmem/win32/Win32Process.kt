@@ -7,7 +7,7 @@ import com.sun.jna.platform.win32.WinNT
 import org.jire.kotmem.Process
 import java.nio.ByteBuffer
 
-class Win32Process(val id: Int, val handle: WinNT.HANDLE) : Process<Win32Module>() {
+class Win32Process(val id: Int, val handle: WinNT.HANDLE) : Process() {
 
 	override fun read(address: Pointer, buffer: ByteBuffer, bytes: Int) {
 		if (!readProcessMemory(this, address, buffer, bytes))

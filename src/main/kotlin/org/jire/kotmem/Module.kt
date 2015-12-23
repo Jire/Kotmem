@@ -2,7 +2,9 @@ package org.jire.kotmem
 
 import com.sun.jna.Pointer
 
-abstract class Module(val process: Process<*>) {
+abstract class Module(val process: Process) {
+
+	val byteBuffer by lazy { process.get(cachedPointer(address), size) }
 
 	abstract val name: String
 

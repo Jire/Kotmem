@@ -8,6 +8,25 @@ abstract class Process {
 
 	private val moduleCache = HashMap<String, Module>()
 
+	/**
+	 * Reads the specified amount of bytes at the address into a non-cached `ByteBuffer`.
+	 *
+	 * **Warning:** This method should not be used often, it creates a buffer of the specified bytes size.
+	 *
+	 * @param address A pointer to the address to read from.
+	 * @param bytes The amount of bytes to read into the buffer.
+	 * @return The non-cached  `ByteBuffer`.
+	 */
+	operator fun get(address: Pointer, bytes: Int): ByteBuffer {
+		val buffer = ByteBuffer.allocateDirect(bytes)
+		lock { read(address, buffer, bytes) }
+		return buffer
+	}
+
+	operator fun get(address: Long, bytes: Int) = get(cachedPointer(address), bytes)
+
+	operator fun get(address: Int, bytes: Int) = get(address.toLong(), bytes)
+
 	operator inline fun <reified T : Any> get(address: Pointer, dataType: DataType<T>): T = lock {
 		val type = T::class.java
 		val bytes = dataType.bytes
@@ -17,28 +36,13 @@ abstract class Process {
 		dataType.read(buffer)
 	}
 
-	/**
-	 * Reads the specified amount of bytes at the address into a non-cached `ByteBuffer`.
-	 *
-	 * *Warning:* This method should not be used often, it creates a buffer of the specified bytes size.
-	 *
-	 * @param address A pointer to the address to read from.
-	 * @param bytes The amount of bytes to read into the buffer.
-	 * @return The non-cached `ByteBuffer`.
-	 */
-	operator fun get(address: Pointer, bytes: Int): ByteBuffer {
-		val buffer = ByteBuffer.allocateDirect(bytes)
-		lock { read(address, buffer, bytes) }
-		return buffer
-	}
-
 	operator inline fun <reified T : Any> get(address: Long, dataType: DataType<T>): T = get(cachedPointer(address), dataType)
 
 	operator inline fun <reified T : Any> get(address: Long): T = get(address, dataTypeOf(T::class.java))
 
 	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
 
-	operator inline fun <reified T : Any> set(address: Pointer, data: T) {
+	operator inline fun <reified T : Any> set(address: Pointer, data: T) = lock {
 		val type = T::class.java
 		val dataType = dataTypeOf(type)
 		val bytes = dataType.bytes
@@ -59,10 +63,10 @@ abstract class Process {
 		return module
 	}
 
-	protected abstract fun read(address: Pointer, buffer: ByteBuffer, bytes: Int)
+	abstract fun read(address: Pointer, buffer: ByteBuffer, bytes: Int)
 
-	protected abstract fun write(address: Pointer, buffer: ByteBuffer, bytes: Int)
+	abstract fun write(address: Pointer, buffer: ByteBuffer, bytes: Int)
 
-	protected abstract fun resolveModule(moduleName: String): Module
+	abstract fun resolveModule(moduleName: String): Module
 
 }

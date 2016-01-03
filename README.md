@@ -1,8 +1,10 @@
+[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--4584-blue.svg)](http://kotlinlang.org) [![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/kotmem/blob/master/LICENSE) [![Issues](https://img.shields.io/github/issues/Jire/kotmem.svg)](https://github.com/Jire/kotmem/issues?q=is%3Aopen)
+
+
 ##Kotmem
 _Easy process, module and memory interfacing through Kotlin_
 
-This library is licensed under LGPL 3.0 and was created for use in my game modding platform called Abendigo which you
- can see here: [https://github.com/Jire/Abendigo](https://github.com/Jire/Abendigo)  
+This library was created for use in my game modding platform called Abendigo which you can see here: [https://github.com/Jire/Abendigo](https://github.com/Jire/Abendigo)  
 
 ---
 

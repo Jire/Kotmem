@@ -7,7 +7,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Tlhelp32
 import com.sun.jna.platform.win32.WinDef.HMODULE
 import com.sun.jna.ptr.IntByReference
-import java.nio.ByteBuffer
+import org.jire.kotmem.MemoryBuffer
 import java.util.*
 
 const val PROCESS_QUERY_INFORMATION = 0x400
@@ -65,8 +65,8 @@ fun resolveModule(process: Win32Process, moduleName: String) =
 
 fun resolveModuleAddress(module: Win32Module) = Pointer.nativeValue(module.lpModuleInfo.lpBaseOfDll!!.pointer)
 
-fun readProcessMemory(process: Win32Process, address: Pointer, buffer: ByteBuffer, bytes: Int) =
+fun readProcessMemory(process: Win32Process, address: Pointer, buffer: MemoryBuffer, bytes: Int) =
 		Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0
 
-fun writeProcessMemory(process: Win32Process, address: Pointer, buffer: ByteBuffer, bytes: Int) =
+fun writeProcessMemory(process: Win32Process, address: Pointer, buffer: MemoryBuffer, bytes: Int) =
 		Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0

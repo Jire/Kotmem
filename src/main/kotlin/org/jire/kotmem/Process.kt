@@ -1,10 +1,9 @@
 package org.jire.kotmem
 
 import com.sun.jna.Pointer
-import java.nio.ByteBuffer
 import java.util.*
 
-abstract class Process {
+abstract class Process(val id: Int) {
 
 	private val moduleCache = HashMap<String, Module>()
 
@@ -17,8 +16,8 @@ abstract class Process {
 	 * @param bytes The amount of bytes to read into the buffer.
 	 * @return The non-cached  `ByteBuffer`.
 	 */
-	operator fun get(address: Pointer, bytes: Int): ByteBuffer {
-		val buffer = ByteBuffer.allocateDirect(bytes)
+	operator fun get(address: Pointer, bytes: Int): MemoryBuffer {
+		val buffer = MemoryBuffer(bytes.toLong())
 		lock { read(address, buffer, bytes) }
 		return buffer
 	}
@@ -32,7 +31,6 @@ abstract class Process {
 		val bytes = dataType.bytes
 		val buffer = cachedBuffer(type, bytes)
 		read(address, buffer, bytes)
-		buffer.rewind()
 		dataType.read(buffer)
 	}
 
@@ -48,7 +46,6 @@ abstract class Process {
 		val bytes = dataType.bytes
 		val buf = cachedBuffer(type, bytes)
 		dataType.write(buf, data)
-		buf.flip()
 		write(address, buf, bytes)
 	}
 
@@ -63,9 +60,9 @@ abstract class Process {
 		return module
 	}
 
-	abstract fun read(address: Pointer, buffer: ByteBuffer, bytes: Int)
+	abstract fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int)
 
-	abstract fun write(address: Pointer, buffer: ByteBuffer, bytes: Int)
+	abstract fun write(address: Pointer, buffer: MemoryBuffer, bytes: Int)
 
 	abstract fun resolveModule(moduleName: String): Module
 

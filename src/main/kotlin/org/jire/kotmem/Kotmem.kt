@@ -5,8 +5,6 @@ package org.jire.kotmem
 
 import com.sun.jna.Pointer
 import org.jire.kotmem.win32.*
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -64,13 +62,13 @@ fun cachedPointer(address: Long): Pointer {
 	return pointer
 }
 
-private val bufferCache = HashMap<Class<*>, ByteBuffer>()
+private val bufferByClass = HashMap<Class<*>, MemoryBuffer>()
 
-fun cachedBuffer(type: Class<*>, bytes: Int): ByteBuffer {
-	var buf = bufferCache[type]
+fun cachedBuffer(type: Class<*>, bytes: Int): MemoryBuffer {
+	var buf = bufferByClass[type]
 	if (buf == null) {
-		buf = ByteBuffer.allocateDirect(bytes)
-		bufferCache.put(type, buf)
-	} else buf.clear()
-	return buf!!.order(ByteOrder.nativeOrder())
+		buf = MemoryBuffer(bytes.toLong())
+		bufferByClass.put(type, buf)
+	}
+	return buf
 }

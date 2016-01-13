@@ -3,31 +3,28 @@
 
 package org.jire.kotmem
 
-import java.nio.ByteBuffer
 import java.util.*
 
-sealed class DataType<T : Any>(val bytes: Int, private val read: (ByteBuffer) -> T,
-                               private val write: (ByteBuffer, T) -> Unit) {
+sealed class DataType<T : Any>(val bytes: Int, private val read: MemoryBuffer.() -> T,
+                               private val write: MemoryBuffer.(T) -> Any) {
 
-	object ByteDataType : DataType<Byte>(1, { it.get() }, { buf, v -> buf.put(v) })
+	object ByteDataType : DataType<Byte>(1, { byte() }, { byte(it) })
 
-	object ShortDataType : DataType<Short>(2, { it.short }, { buf, v -> buf.putShort(v) })
+	object ShortDataType : DataType<Short>(2, { short() }, { short(it) })
 
-	object IntDataType : DataType<Int>(4, { it.int }, { buf, v -> buf.putInt(v) })
+	object IntDataType : DataType<Int>(4, { int() }, { int(it) })
 
-	object LongDataType : DataType<Long>(8, { it.long }, { buf, v -> buf.putLong(v) })
+	object LongDataType : DataType<Long>(8, { long() }, { long(it) })
 
-	object FloatDataType : DataType<Float>(4, { it.float }, { buf, v -> buf.putFloat(v) })
+	object FloatDataType : DataType<Float>(4, { float() }, { float(it) })
 
-	object DoubleDataType : DataType<Double>(8, { it.double }, { buf, v -> buf.putDouble(v) })
+	object DoubleDataType : DataType<Double>(8, { double() }, { double(it) })
 
-	object BooleanDataType : DataType<Boolean>(1, { it.get() > 0 }, { buf, v ->
-		buf.put((if (v) 1 else 0).toByte())
-	})
+	object BooleanDataType : DataType<Boolean>(1, { byte() > 0 }, { byte((if (it) 1 else 0).toByte()) })
 
-	fun read(buf: ByteBuffer) = read.invoke(buf)
+	fun read(buf: MemoryBuffer) = read.invoke(buf)
 
-	fun write(buf: ByteBuffer, value: T) = write.invoke(buf, value)
+	fun write(buf: MemoryBuffer, value: T) = write.invoke(buf, value)
 
 }
 

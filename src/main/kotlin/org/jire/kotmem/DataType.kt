@@ -22,9 +22,9 @@ sealed class DataType<T : Any>(val bytes: Int, private val read: MemoryBuffer.()
 
 	object BooleanDataType : DataType<Boolean>(1, { byte() > 0 }, { byte((if (it) 1 else 0).toByte()) })
 
-	fun read(buf: MemoryBuffer) = read.invoke(buf)
+	fun read(buf: MemoryBuffer) = buf.read()
 
-	fun write(buf: MemoryBuffer, value: T) = write.invoke(buf, value)
+	fun write(buf: MemoryBuffer, value: T) = buf.write(value)
 
 }
 
@@ -42,4 +42,4 @@ private fun mapDataTypes(): HashMap<Class<*>, DataType<*>> {
 	return map
 }
 
-fun <T : Any> dataTypeOf(`class`: Class<T>) = classToType.getRaw(`class`) as DataType<T>
+fun <T : Any> dataTypeOf(`class`: Class<T>) = classToType[`class`] as DataType<T>

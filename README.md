@@ -1,4 +1,4 @@
-[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--4584-blue.svg)](http://kotlinlang.org) [![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/kotmem/blob/master/LICENSE) [![Issues](https://img.shields.io/github/issues/Jire/kotmem.svg)](https://github.com/Jire/kotmem/issues?q=is%3Aopen)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--4584-blue.svg)](http://kotlinlang.org) [![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/kotmem/blob/master/LICENSE)
 
 
 ##Kotmem

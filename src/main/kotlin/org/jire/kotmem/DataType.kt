@@ -5,8 +5,7 @@ package org.jire.kotmem
 
 import java.util.*
 
-sealed class DataType<T : Any>(val bytes: Int, private val read: MemoryBuffer.() -> T,
-                               private val write: MemoryBuffer.(T) -> Any) {
+sealed class DataType<T : Any>(val bytes: Int, val read: MemoryBuffer.() -> T, val write: MemoryBuffer.(T) -> Any) {
 
 	object ByteDataType : DataType<Byte>(1, { byte() }, { byte(it) })
 
@@ -21,10 +20,6 @@ sealed class DataType<T : Any>(val bytes: Int, private val read: MemoryBuffer.()
 	object DoubleDataType : DataType<Double>(8, { double() }, { double(it) })
 
 	object BooleanDataType : DataType<Boolean>(1, { byte() > 0 }, { byte((if (it) 1 else 0).toByte()) })
-
-	fun read(buf: MemoryBuffer) = buf.read()
-
-	fun write(buf: MemoryBuffer, value: T) = buf.write(value)
 
 }
 

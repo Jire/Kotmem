@@ -4,7 +4,9 @@
 ##Kotmem
 _Easy process, module and memory interfacing through Kotlin_
 
-This library was created for use in my game modding platform called Abendigo which you can see here: [https://github.com/Jire/Abendigo](https://github.com/Jire/Abendigo)  
+This library was created for use in my game modding platform called Abendigo which you can see here: [https://github.com/Jire/Abendigo](https://github.com/Jire/Abendigo)
+
+This project derives from Java Memory Manipulation ([https://github.com/Jonatino/Java-Memory-Manipulation](https://github.com/Jonatino/Java-Memory-Manipulation))
 
 ---
 

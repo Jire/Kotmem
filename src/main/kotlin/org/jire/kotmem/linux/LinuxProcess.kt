@@ -30,7 +30,7 @@ class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
 		remote.iov_len = bytes
 
 		if (uio.process_vm_writev(id, local, 1, remote, 1, 0) != bytes.toLong())
-			throw IllegalStateException("Read memory failed at address ${Pointer.nativeValue(address)} bytes $bytes")
+			throw IllegalStateException("Write memory failed at address ${Pointer.nativeValue(address)} bytes $bytes")
 	}
 
 	override fun resolveModule(moduleName: String) = modules[moduleName]!!

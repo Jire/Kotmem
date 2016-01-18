@@ -9,7 +9,13 @@ class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
 	private val local = iovec()
 	private val remote = iovec()
 
-	private val modules = HashMap<String, Module>()
+	override val modules by lazy {
+		val map = HashMap<String, Module>()
+
+		// TODO resolve modules
+
+		Collections.unmodifiableMap(map)
+	}
 
 	override fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
 		local.iov_base = buffer
@@ -31,12 +37,6 @@ class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
 
 		if (uio.process_vm_writev(id, local, 1, remote, 1, 0) != bytes.toLong())
 			throw IllegalStateException("Write memory failed at address ${Pointer.nativeValue(address)} bytes $bytes")
-	}
-
-	override fun resolveModule(moduleName: String) = modules[moduleName]!!
-
-	init {
-		// TODO initialize modules
 	}
 
 }

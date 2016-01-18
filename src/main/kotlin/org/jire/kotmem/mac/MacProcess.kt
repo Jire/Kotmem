@@ -1,10 +1,18 @@
 package org.jire.kotmem.mac
 
 import com.sun.jna.Pointer
-import org.jire.kotmem.MemoryBuffer
-import org.jire.kotmem.Process
+import org.jire.kotmem.*
+import java.util.*
 
 class MacProcess(id: Int, val task: Int) : Process(id) {
+
+	override val modules by lazy {
+		val map = HashMap<String, Module>()
+
+		// TODO resolve modules
+
+		Collections.unmodifiableMap(map)
+	}
 
 	override fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
 		if (mac.vm_read(task, address, bytes, buffer, null) != bytes)
@@ -15,12 +23,6 @@ class MacProcess(id: Int, val task: Int) : Process(id) {
 	override fun write(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
 		if (mac.vm_write(task, address, buffer, bytes) != 0)
 			throw IllegalStateException("Write memory failed at address ${Pointer.nativeValue(address)} bytes $bytes")
-	}
-
-	override fun resolveModule(moduleName: String) = TODO()
-
-	init {
-		// TODO initialize modules
 	}
 
 }

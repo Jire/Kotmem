@@ -1,11 +1,10 @@
 package org.jire.kotmem
 
 import com.sun.jna.Pointer
-import java.util.*
 
 abstract class Process(val id: Int) {
 
-	private val moduleCache = HashMap<String, Module>()
+	abstract val modules: Map<String, Module>
 
 	/**
 	 * Reads the specified amount of bytes at the address into a non-cached `ByteBuffer`.
@@ -53,17 +52,10 @@ abstract class Process(val id: Int) {
 
 	operator inline fun <reified T : Any> set(address: Int, data: T): Unit = set(address.toLong(), data)
 
-	operator fun get(moduleName: String): Module {
-		if (moduleCache.contains(moduleName)) return moduleCache[moduleName]!!
-		val module = resolveModule(moduleName)
-		moduleCache.put(moduleName, module)
-		return module
-	}
+	operator fun get(moduleName: String) = modules[moduleName]!!
 
 	abstract fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int)
 
 	abstract fun write(address: Pointer, buffer: MemoryBuffer, bytes: Int)
-
-	abstract fun resolveModule(moduleName: String): Module
 
 }

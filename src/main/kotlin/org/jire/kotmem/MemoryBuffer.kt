@@ -17,27 +17,22 @@ class MemoryBuffer(val size: Long, val peer: Long = Native.malloc(size)) : Point
 
 	fun double() = getDouble(0)
 
-	fun boolean() = if (byte() > 0) true else false
+	fun boolean() = byte() > 0
 
 	infix fun bytes(dest: ByteArray) = read(0, dest, 0, dest.size)
 
-	infix fun byte(value: Byte) = daisy { setByte(0, value) }
+	infix fun byte(value: Byte) = apply { setByte(0, value) }
 
-	infix fun short(value: Short) = daisy { setShort(0, value) }
+	infix fun short(value: Short) = apply { setShort(0, value) }
 
-	infix fun int(value: Int) = daisy { setInt(0, value) }
+	infix fun int(value: Int) = apply { setInt(0, value) }
 
-	infix fun long(value: Long) = daisy { setLong(0, value) }
+	infix fun long(value: Long) = apply { setLong(0, value) }
 
-	infix fun float(value: Float) = daisy { setFloat(0, value) }
+	infix fun float(value: Float) = apply { setFloat(0, value) }
 
-	infix fun double(value: Double) = daisy { setDouble(0, value) }
+	infix fun double(value: Double) = apply { setDouble(0, value) }
 
 	infix fun boolean(value: Boolean) = byte(if (value) 1 else 0)
 
-}
-
-inline fun <T> T.daisy(body: () -> Any): T {
-	body()
-	return this
 }

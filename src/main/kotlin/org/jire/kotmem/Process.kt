@@ -7,7 +7,7 @@ abstract class Process(val id: Int) {
 	abstract val modules: Map<String, Module>
 
 	/**
-	 * Reads the specified amount of bytes at the address into a non-cached `ByteBuffer`.
+	 * Reads the specified amount of bytes at the address into a non-cached `MemoryBuffer`.
 	 *
 	 * **Warning:** This method should not be used often, it creates a buffer of the specified bytes size.
 	 *

@@ -14,7 +14,7 @@ This project derives from Java Memory Manipulation ([https://github.com/Jonatino
 
 Let's open a process!
 
-    val process = processes["just_for_fun.exe"]
+    val process = Processes["just_for_fun.exe"]
     
 Now let's use the process to read at some address. Note that the type can't be inferred by the compiler here, it must
  be explicit in the value declaration.

@@ -5,7 +5,7 @@ package org.jire.kotmem.win32
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Tlhelp32
-import org.jire.kotmem.MemoryBuffer
+import org.jire.kotmem.NativeBuffer
 
 const val PROCESS_QUERY_INFORMATION = 0x400
 const val PROCESS_VM_READ = 0x10
@@ -32,8 +32,8 @@ fun pidByName(name: String): Int {
 fun openProcess(processID: Int, accessFlags: Int = PROCESS_FULL_ACCESS)
 		= Win32Process(processID, Kernel32.OpenProcess(accessFlags, true, processID))
 
-fun readProcessMemory(process: Win32Process, address: Pointer, buffer: MemoryBuffer, bytes: Int) =
+fun readProcessMemory(process: Win32Process, address: Pointer, buffer: NativeBuffer, bytes: Int) =
 		Kernel32.ReadProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0
 
-fun writeProcessMemory(process: Win32Process, address: Pointer, buffer: MemoryBuffer, bytes: Int) =
+fun writeProcessMemory(process: Win32Process, address: Pointer, buffer: NativeBuffer, bytes: Int) =
 		Kernel32.WriteProcessMemory(process.handle.pointer, address, buffer, bytes, 0) > 0

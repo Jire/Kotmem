@@ -7,16 +7,16 @@ abstract class Process(val id: Int) {
 	abstract val modules: Map<String, Module>
 
 	/**
-	 * Reads the specified amount of bytes at the address into a non-cached `MemoryBuffer`.
+	 * Reads the specified amount of bytes at the address into a non-cached `NativeBuffer`.
 	 *
 	 * **Warning:** This method should not be used often, it creates a buffer of the specified bytes size.
 	 *
 	 * @param address A pointer to the address to read from.
 	 * @param bytes The amount of bytes to read into the buffer.
-	 * @return The non-cached  `ByteBuffer`.
+	 * @return The non-cached  `NativeBuffer`.
 	 */
-	operator fun get(address: Pointer, bytes: Int): MemoryBuffer {
-		val buffer = MemoryBuffer(bytes.toLong())
+	operator fun get(address: Pointer, bytes: Int): NativeBuffer {
+		val buffer = NativeBuffer(bytes.toLong())
 		lock { read(address, buffer, bytes) }
 		return buffer
 	}
@@ -54,8 +54,8 @@ abstract class Process(val id: Int) {
 
 	operator fun get(moduleName: String) = modules[moduleName]!!
 
-	abstract fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int)
+	abstract fun read(address: Pointer, buffer: NativeBuffer, bytes: Int)
 
-	abstract fun write(address: Pointer, buffer: MemoryBuffer, bytes: Int)
+	abstract fun write(address: Pointer, buffer: NativeBuffer, bytes: Int)
 
 }

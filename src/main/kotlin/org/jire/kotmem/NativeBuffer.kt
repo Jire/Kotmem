@@ -3,7 +3,7 @@ package org.jire.kotmem
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 
-class MemoryBuffer(val size: Long, val peer: Long = Native.malloc(size)) : Pointer(peer) {
+class NativeBuffer(val size: Long, val peer: Long = Native.malloc(size)) : Pointer(peer) {
 
 	fun byte() = getByte(0)
 

@@ -9,18 +9,22 @@ import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
-object processes {
+object Processes {
 
+	@JvmStatic
 	operator fun get(processID: Int): Process = openProcess(processID) // TODO choose platform
 
+	@JvmStatic
 	operator inline fun get(processID: Int, action: (Process) -> Unit): Process {
 		val process = get(processID)
 		action(process)
 		return process
 	}
 
+	@JvmStatic
 	operator fun get(processName: String) = get(pidByName(processName))
 
+	@JvmStatic
 	operator inline fun get(processName: String, action: (Process) -> Unit): Process {
 		val process = get(processName)
 		action(process)
@@ -29,7 +33,7 @@ object processes {
 
 }
 
-object keys {
+object Keys {
 
 	// TODO make this multi-platform
 
@@ -62,12 +66,12 @@ fun cachedPointer(address: Long): Pointer {
 	return pointer
 }
 
-private val bufferByClass = HashMap<Class<*>, MemoryBuffer>()
+private val bufferByClass = HashMap<Class<*>, NativeBuffer>()
 
-fun cachedBuffer(type: Class<*>, bytes: Int): MemoryBuffer {
+fun cachedBuffer(type: Class<*>, bytes: Int): NativeBuffer {
 	var buf = bufferByClass[type]
 	if (buf == null) {
-		buf = MemoryBuffer(bytes.toLong())
+		buf = NativeBuffer(bytes.toLong())
 		bufferByClass.put(type, buf)
 	}
 	return buf

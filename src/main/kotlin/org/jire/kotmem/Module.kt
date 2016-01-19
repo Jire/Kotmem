@@ -4,7 +4,7 @@ import com.sun.jna.Pointer
 
 abstract class Module(val process: Process, val pointer: Pointer, val address: Long = Pointer.nativeValue(pointer)) {
 
-	val byteBuffer by lazy { process.get(cachedPointer(address), size) }
+	val buffer by lazy { process.get(cachedPointer(address), size) }
 
 	abstract val name: String
 

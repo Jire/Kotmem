@@ -5,7 +5,7 @@ package org.jire.kotmem
 
 import java.util.*
 
-sealed class DataType<T : Any>(val bytes: Int, val read: MemoryBuffer.() -> T, val write: MemoryBuffer.(T) -> Any) {
+sealed class DataType<T : Any>(val bytes: Int, val read: NativeBuffer.() -> T, val write: NativeBuffer.(T) -> Any) {
 
 	object ByteDataType : DataType<Byte>(1, { byte() }, { byte(it) })
 

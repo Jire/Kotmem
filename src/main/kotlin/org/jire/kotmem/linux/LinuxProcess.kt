@@ -42,7 +42,7 @@ class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
 		Collections.unmodifiableMap(map)
 	}
 
-	override fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
+	override fun read(address: Pointer, buffer: NativeBuffer, bytes: Int) {
 		local.iov_base = buffer
 		local.iov_len = bytes
 
@@ -53,7 +53,7 @@ class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
 			throw IllegalStateException("Read memory failed at address ${Pointer.nativeValue(address)} bytes $bytes")
 	}
 
-	override fun write(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
+	override fun write(address: Pointer, buffer: NativeBuffer, bytes: Int) {
 		local.iov_base = buffer
 		local.iov_len = bytes
 

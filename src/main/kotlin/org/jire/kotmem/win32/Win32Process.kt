@@ -4,7 +4,7 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.*
 import com.sun.jna.ptr.IntByReference
-import org.jire.kotmem.MemoryBuffer
+import org.jire.kotmem.NativeBuffer
 import org.jire.kotmem.Process
 import java.util.*
 
@@ -30,12 +30,12 @@ class Win32Process(id: Int, val handle: WinNT.HANDLE) : Process(id) {
 		Collections.unmodifiableMap(map)
 	}
 
-	override fun read(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
+	override fun read(address: Pointer, buffer: NativeBuffer, bytes: Int) {
 		if (!readProcessMemory(this, address, buffer, bytes))
 			throw Win32Exception(Native.getLastError())
 	}
 
-	override fun write(address: Pointer, buffer: MemoryBuffer, bytes: Int) {
+	override fun write(address: Pointer, buffer: NativeBuffer, bytes: Int) {
 		if (!writeProcessMemory(this, address, buffer, bytes))
 			throw Win32Exception(Native.getLastError())
 	}

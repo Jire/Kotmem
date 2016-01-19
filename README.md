@@ -1,4 +1,4 @@
-[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--4584-blue.svg)](http://kotlinlang.org) [![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/kotmem/blob/master/LICENSE) [![Release](https://jitpack.io/v/Jire/kotmem.svg)](https://jitpack.io/#Jire/kotmem)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.0.0--beta--4584-blue.svg)](http://kotlinlang.org) [![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/Kotmem/blob/master/LICENSE) [![Release](https://jitpack.io/v/Jire/Kotmem.svg)](https://jitpack.io/#Jire/Kotmem)
 
 
 ##Kotmem
@@ -51,5 +51,4 @@ This project is not yet ready for production. Expect lots of breaking changes.
 
 Also currently there is a bug in Kotlin which prevents using *get* and *set* with operators. The workaround is that 
 you must use explicit function calls to *get* and *set* (e.g. `val cafeBabe: Int = process.get(0xCAFEBABE)`) until the 
-issue
- is fixed.
+issue is fixed.

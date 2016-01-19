@@ -2,6 +2,9 @@ package org.jire.kotmem.linux
 
 import com.sun.jna.Pointer
 import org.jire.kotmem.*
+import java.lang.Long.parseLong
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 
 class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
@@ -12,7 +15,29 @@ class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
 	override val modules by lazy {
 		val map = HashMap<String, Module>()
 
-		// TODO resolve modules
+		for (line in Files.readAllLines(Paths.get("/proc/$id/maps"))) {
+			val split = line.split(" ")
+			val regionSplit = split[0].split("-")
+
+			val start = parseLong(regionSplit[0], 16)
+			val end = parseLong(regionSplit[1], 16)
+
+			val offset = parseLong(split[2], 16)
+			if (offset <= 0) continue
+
+			var path = "";
+			var i = 5
+			while (i < split.size) {
+				val s = split[i].trim { it <= ' ' }
+				if (s.isEmpty() && ++i > split.size) break
+				else if (s.isEmpty() && !split[i].trim { it <= ' ' }.isEmpty()) path += split[i]
+				else if (!s.isEmpty()) path += split[i]
+				i++
+			}
+
+			val moduleName = path.substring(path.lastIndexOf("/") + 1, path.length)
+			map.put(moduleName, LinuxModule(this, Pointer.createConstant(start), moduleName, (end - start).toInt()))
+		}
 
 		Collections.unmodifiableMap(map)
 	}

@@ -45,7 +45,7 @@ object Processes {
 					"ps -A | grep -m1 \"$processName\" | awk '{print $1}'"))
 			Processes[Scanner(search.inputStream).nextInt()]
 		}
-		else -> throw UnsupportedOperationException("Unsupported platform or not enough privilege")
+		else -> throw UnsupportedOperationException("Unsupported platform")
 	}
 
 	@JvmStatic

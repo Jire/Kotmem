@@ -12,9 +12,13 @@ This project derives from Java Memory Manipulation ([https://github.com/Jonatino
 
 ###One Minute Intro
 
-Let's open a process!
+You can open a process by name:
 
     val process = Processes["just_for_fun.exe"]
+    
+Or by ID:
+
+    val process = Processes[1337]
     
 Now let's use the process to read at some address. Note that the type can't be inferred by the compiler here, it must
  be explicit in the value declaration.
@@ -51,4 +55,5 @@ This project is not yet ready for production. Expect lots of breaking changes.
 
 Also currently there is a bug in Kotlin which prevents using *get* and *set* with operators. The workaround is that 
 you must use explicit function calls to *get* and *set* (e.g. `val cafeBabe: Int = process.get(0xCAFEBABE)`) until the 
-issue is fixed.
+issue is fixed. (Exciting news: This has been recently fixed and a new Kotlin release should have the library working
+in the expected way!)

@@ -7,7 +7,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
-class LinuxProcess(id: Int, val handle: Pointer) : Process(id) {
+class LinuxProcess(id: Int) : Process(id) {
 
 	private val local = iovec()
 	private val remote = iovec()

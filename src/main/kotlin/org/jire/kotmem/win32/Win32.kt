@@ -14,16 +14,16 @@ const val PROCESS_VM_OPERATION = 0x8
 
 const val PROCESS_FULL_ACCESS = PROCESS_QUERY_INFORMATION or PROCESS_VM_READ or PROCESS_VM_WRITE or PROCESS_VM_OPERATION
 
-fun pidByName(name: String): Int {
+fun processIDByName(processName: String): Int {
 	val snapshot = Kernel32.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPALL, 0)
 	val entry = Tlhelp32.PROCESSENTRY32.ByReference()
 	try {
 		while (Kernel32.Process32Next(snapshot, entry)) {
-			val processName = Native.toString(entry.szExeFile)
-			if (name.equals(processName))
+			val entryName = Native.toString(entry.szExeFile)
+			if (processName.equals(entryName))
 				return entry.th32ProcessID.toInt()
 		}
-		throw NullPointerException("Could not find ID")
+		throw IllegalStateException("Could not find process ID of \"$processName\"")
 	} finally {
 		Kernel32.CloseHandle(snapshot)
 	}

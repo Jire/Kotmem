@@ -60,14 +60,3 @@ We can also use a module to read and write. Doing so will use the module's addre
 val faceFeed: Short = awesomeDLL[0xFACEFEED]
 awesomeDLL[0xFACEFEED] = faceFeed + 1
 ```
-
----
-
-###Caution!
-
-This project is not yet ready for production. Expect lots of breaking changes.
-
-Also currently there is a bug in Kotlin which prevents using *get* and *set* with operators. The workaround is that 
-you must use explicit function calls to *get* and *set* (e.g. `val cafeBabe: Int = process.get(0xCAFEBABE)`) until the 
-issue is fixed. (Exciting news: This has been recently fixed and a new Kotlin release should have the library working
-in the expected way!)

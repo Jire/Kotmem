@@ -12,8 +12,6 @@ import org.jire.kotmem.mac.mac
 import org.jire.kotmem.win32.*
 import java.lang.Runtime.getRuntime
 import java.util.*
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantLock
 
 object Processes {
 
@@ -60,7 +58,7 @@ object Processes {
 object Keys {
 
 	@JvmStatic @JvmName("state")
-	operator fun invoke(keyCode: Int): Int = when {
+	operator fun invoke(keyCode: Int) = when {
 		Platform.isWindows() -> User32.GetKeyState(keyCode).toInt()
 		else -> throw UnsupportedOperationException("Unsupported platform")
 	}
@@ -68,19 +66,6 @@ object Keys {
 	@JvmStatic @JvmName("isPressed")
 	operator fun get(vKey: Int) = Keys(vKey) < 0
 
-}
-
-var kotmemLock: Lock = ReentrantLock(true)
-
-inline fun <T> lock(body: () -> T): T = lock(kotmemLock, body)
-
-inline fun <T> lock(lock: Lock, body: () -> T): T {
-	lock.lock()
-	try {
-		return body.invoke()
-	} finally {
-		lock.unlock()
-	}
 }
 
 private val pointer = ThreadLocal.withInitial { Pointer(0) }
@@ -91,13 +76,13 @@ fun cachedPointer(address: Long): Pointer {
 	return pointer
 }
 
-private val bufferByClass = HashMap<Class<*>, NativeBuffer>()
+private val bufferByClass = ThreadLocal.withInitial { HashMap<Class<*>, NativeBuffer>() }
 
 fun cachedBuffer(type: Class<*>, bytes: Int): NativeBuffer {
-	var buf = bufferByClass[type]
+	var buf = bufferByClass.get()[type]
 	if (buf == null) {
 		buf = NativeBuffer(bytes.toLong())
-		bufferByClass.put(type, buf)
+		bufferByClass.get().put(type, buf)
 	}
 	return buf
 }

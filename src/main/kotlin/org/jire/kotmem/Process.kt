@@ -17,7 +17,7 @@ abstract class Process(val id: Int) {
 	 */
 	operator fun get(address: Pointer, bytes: Int): NativeBuffer {
 		val buffer = NativeBuffer(bytes.toLong())
-		lock { read(address, buffer, bytes) }
+		read(address, buffer, bytes)
 		return buffer
 	}
 
@@ -25,12 +25,12 @@ abstract class Process(val id: Int) {
 
 	operator fun get(address: Int, bytes: Int) = get(address.toLong(), bytes)
 
-	operator inline fun <reified T : Any> get(address: Pointer, dataType: DataType<T>): T = lock {
+	operator inline fun <reified T : Any> get(address: Pointer, dataType: DataType<T>): T {
 		val type = T::class.java
 		val bytes = dataType.bytes
 		val buffer = cachedBuffer(type, bytes)
 		read(address, buffer, bytes)
-		dataType.read(buffer)
+		return dataType.read(buffer)
 	}
 
 	operator inline fun <reified T : Any> get(address: Long, dataType: DataType<T>): T = get(cachedPointer(address), dataType)
@@ -39,7 +39,7 @@ abstract class Process(val id: Int) {
 
 	operator inline fun <reified T : Any> get(address: Int): T = get(address.toLong())
 
-	operator inline fun <reified T : Any> set(address: Pointer, data: T) = lock {
+	operator inline fun <reified T : Any> set(address: Pointer, data: T) {
 		val type = T::class.java
 		val dataType = dataTypeOf(type)
 		val bytes = dataType.bytes

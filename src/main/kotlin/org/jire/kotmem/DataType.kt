@@ -25,14 +25,14 @@ sealed class DataType<T : Any>(val bytes: Int, val read: NativeBuffer.() -> T, v
 
 private val classToType by lazy {
 	val map = HashMap<Class<*>, DataType<*>>()
-	
-	map.put(java.lang.Byte::class.java, DataType.ByteDataType)
-	map.put(java.lang.Short::class.java, DataType.ShortDataType)
-	map.put(java.lang.Integer::class.java, DataType.IntDataType)
-	map.put(java.lang.Long::class.java, DataType.LongDataType)
-	map.put(java.lang.Float::class.java, DataType.FloatDataType)
-	map.put(java.lang.Double::class.java, DataType.DoubleDataType)
-	map.put(java.lang.Boolean::class.java, DataType.BooleanDataType)
+
+	map[java.lang.Byte::class.java] = DataType.ByteDataType
+	map[java.lang.Short::class.java] = DataType.ShortDataType
+	map[java.lang.Integer::class.java] = DataType.IntDataType
+	map[java.lang.Long::class.java] = DataType.LongDataType
+	map[java.lang.Float::class.java] = DataType.FloatDataType
+	map[java.lang.Double::class.java] = DataType.DoubleDataType
+	map[java.lang.Boolean::class.java] = DataType.BooleanDataType
 
 	Collections.unmodifiableMap(map)
 }

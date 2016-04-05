@@ -9,7 +9,9 @@ import com.sun.jna.ptr.IntByReference
 import org.jire.kotmem.linux.LinuxProcess
 import org.jire.kotmem.mac.MacProcess
 import org.jire.kotmem.mac.mac
-import org.jire.kotmem.win32.*
+import org.jire.kotmem.win32.User32
+import org.jire.kotmem.win32.openProcess
+import org.jire.kotmem.win32.processIDByName
 import java.lang.Runtime.getRuntime
 import java.util.*
 
@@ -21,9 +23,9 @@ object Processes {
 		Platform.isLinux() /*&& sudo*/ -> LinuxProcess(processID)
 		Platform.isMac() /*&& sudo*/ -> {
 			val out = IntByReference()
-			if (mac.task_for_pid(mac.mach_task_self(), processID, out) == 0)
-				MacProcess(processID, out.value)
-			throw IllegalStateException("Failed to find mach task port for process")
+			if (mac.task_for_pid(mac.mach_task_self(), processID, out) != 0)
+				throw IllegalStateException("Failed to find mach task port for process")
+			MacProcess(processID, out.value)
 		}
 		else -> throw UnsupportedOperationException("Unsupported platform or not enough privilege")
 	}

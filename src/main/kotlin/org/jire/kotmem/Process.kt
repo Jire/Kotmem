@@ -33,7 +33,8 @@ abstract class Process(val id: Int) {
 		return dataType.read(buffer)
 	}
 
-	operator inline fun <reified T : Any> get(address: Long, dataType: DataType<T>): T = get(cachedPointer(address), dataType)
+	operator inline fun <reified T : Any> get(address: Long, dataType: DataType<T>): T
+			= get(cachedPointer(address), dataType)
 
 	operator inline fun <reified T : Any> get(address: Long): T = get(address, dataTypeOf(T::class.java))
 

@@ -1,5 +1,5 @@
 group 'org.jire.kotmem'
-version '0.8'
+version '0.9'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -19,7 +19,7 @@ dependencies {
 }
 
 buildscript {
-	ext.kotlin_version = '1.0.1-1'
+	ext.kotlin_version = '1.0.1-2'
 	repositories {
 		mavenCentral()
 	}

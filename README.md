@@ -1,15 +1,11 @@
 [![Build Status](https://travis-ci.org/Jire/Kotmem.svg?branch=master)](https://travis-ci.org/Jire/Kotmem)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.0.2-blue.svg)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.0.2--1-blue.svg)](http://kotlinlang.org)
 [![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/Kotmem/blob/master/LICENSE)
 [![Release](https://jitpack.io/v/Jire/Kotmem.svg)](https://jitpack.io/#Jire/Kotmem)
 
 
 ##Kotmem
-_Easy process, module and memory interfacing through Kotlin_
-
-This library was created for use in my game modding platform called Abendigo which you can see here: [https://github.com/Jire/Abendigo](https://github.com/Jire/Abendigo)
-
-This project derives from Java Memory Manipulation ([https://github.com/Jonatino/Java-Memory-Manipulation](https://github.com/Jonatino/Java-Memory-Manipulation))
+_Easy process, module and memory interfacing through Kotlin on the JVM_
 
 ---
 

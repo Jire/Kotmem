@@ -5,29 +5,26 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-	compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-
-	compile 'net.java.dev.jna:jna:4.2.1'
-	compile 'net.java.dev.jna:jna-platform:4.2.1'
+    compile "net.java.dev.jna:jna:$jna_version"
+    compile "net.java.dev.jna:jna-platform:$jna_version"
 }
 
 buildscript {
-	ext.kotlin_version = '1.0.2'
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-	}
-}
-
-sourceSets {
-	main.java.srcDirs += 'src/main/kotlin'
+    ext {
+        kotlin_version = '1.0.2-1'
+        jna_version = '4.2.2'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }

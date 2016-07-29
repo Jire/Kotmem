@@ -1,8 +1,123 @@
-group 'org.jire.kotmem'
-version '0.9'
+buildscript {
+    ext.your_name = 'Thomas Nappo'
+    ext.your_email = 'technology@live.com'
+    ext.your_github_name = 'Jire'
 
-apply plugin: 'java'
-apply plugin: 'kotlin'
+    ext.project_name = 'Kotmem'
+    ext.project_description = 'Easy process, module and memory interfacing through Kotlin on the JVM'
+    ext.project_group = 'org.jire.kotmem'
+    ext.project_artifact = 'Kotmem'
+    ext.project_version = '0.85'
+    ext.project_license = 'The GNU Lesser General Public License v3.0' // the full license name
+    ext.project_license_tag = 'LGPL-3.0' // the license tag name
+    ext.project_license_url = 'https://www.gnu.org/licenses/lgpl-3.0.txt' // link to the license
+
+    ext.kotlin_version = '1.0.3'
+
+    ext.jna_version = '4.2.2'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.7"
+}
+
+group project_group
+version project_version
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    apply plugin: 'java'
+    apply plugin: 'kotlin'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            groupId project_group
+            artifactId project_artifact
+            version project_version
+            artifact sourcesJar
+            artifact javadocJar
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name project_name
+                    description project_description
+                    url "https://github.com/$your_github_name/$project_name"
+                    scm {
+                        url "https://github.com/$your_github_name/$project_name"
+                        connection "scm:git:git://github.com/$your_github_name/${project_name}.git"
+                        developerConnection "scm:git:ssh:git@github.com:$your_github_name/${project_name}.git"
+                    }
+                    licenses {
+                        license {
+                            name project_license
+                            url project_license_url
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id your_github_name
+                            name your_name
+                            email your_email
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    publications = ['maven']
+    pkg {
+        repo = 'maven'
+        name = project_name
+        desc = project_description
+        licenses = [project_license_tag]
+        publicDownloadNumbers = true
+        websiteUrl = "https://github.com/$your_github_name/$project_name"
+        issueTrackerUrl = "https://github.com/$your_github_name/$project_name/issues"
+        vcsUrl = "https://github.com/$your_github_name/${project_name}.git"
+        githubRepo = "$your_github_name/$project_name"
+        version {
+            name = project_version
+            vcsTag = project_version
+            gpg {
+                sign = true
+            }
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -10,21 +125,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    compile "net.java.dev.jna:jna:$jna_version"
-    compile "net.java.dev.jna:jna-platform:$jna_version"
-}
-
-buildscript {
-    ext {
-        kotlin_version = '1.0.2-1'
-        jna_version = '4.2.2'
-    }
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+    compile group: 'net.java.dev.jna', name: 'jna', version: jna_version
+    compile group: 'net.java.dev.jna', name: 'jna-platform', version: jna_version
 }

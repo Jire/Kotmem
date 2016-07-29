@@ -1,11 +1,23 @@
 [![Build Status](https://travis-ci.org/Jire/Kotmem.svg?branch=master)](https://travis-ci.org/Jire/Kotmem)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.0.2--1-blue.svg)](http://kotlinlang.org)
-[![license](https://img.shields.io/badge/license-LGPL%203.0-yellowgreen.svg)](https://github.com/Jire/Kotmem/blob/master/LICENSE)
-[![Release](https://jitpack.io/v/Jire/Kotmem.svg)](https://jitpack.io/#Jire/Kotmem)
-
+[![Dependency Status](https://www.versioneye.com/user/projects/578838bcc3d40f003caa2efa/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/578838bcc3d40f003caa2efa)
+[![license](https://img.shields.io/github/license/Jire/Kotmem.svg)](https://github.com/Jire/Kotmem/blob/master/LICENSE)
 
 ##Kotmem
 _Easy process, module and memory interfacing through Kotlin on the JVM_
+
+### Gradle
+```groovy
+compile 'org.jire.kotmem:Kotmem:0.86'
+```
+
+### Maven
+```xml
+<dependency>
+  <groupId>org.jire.kotmem</groupId>
+  <artifactId>Kotmem</artifactId>
+  <version>0.86</version>
+</dependency>
+```
 
 ---
 

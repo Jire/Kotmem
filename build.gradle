@@ -7,7 +7,7 @@ buildscript {
     ext.project_description = 'Easy process, module and memory interfacing through Kotlin on the JVM'
     ext.project_group = 'org.jire.kotmem'
     ext.project_artifact = 'Kotmem'
-    ext.project_version = '0.85'
+    ext.project_version = '0.86'
     ext.project_license = 'The GNU Lesser General Public License v3.0' // the full license name
     ext.project_license_tag = 'LGPL-3.0' // the license tag name
     ext.project_license_url = 'https://www.gnu.org/licenses/lgpl-3.0.txt' // link to the license

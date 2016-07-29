@@ -1,9 +1,9 @@
+##Kotmem
+_Easy process, module and memory interfacing through Kotlin on the JVM_
+
 [![Build Status](https://travis-ci.org/Jire/Kotmem.svg?branch=master)](https://travis-ci.org/Jire/Kotmem)
 [![Dependency Status](https://www.versioneye.com/user/projects/578838bcc3d40f003caa2efa/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/578838bcc3d40f003caa2efa)
 [![license](https://img.shields.io/github/license/Jire/Kotmem.svg)](https://github.com/Jire/Kotmem/blob/master/LICENSE)
-
-##Kotmem
-_Easy process, module and memory interfacing through Kotlin on the JVM_
 
 ### Gradle
 ```groovy
